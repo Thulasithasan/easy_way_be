@@ -40,7 +40,35 @@ jobs:
 
       - name: "Write SSH key to file"
         run: |
-          echo "${{ secrets.SSH_KEY }}" > easyway.pem
+          cat <<EOF > easyway.pem
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEowIBAAKCAQEArbxH2TzWCVwUj1+9V3fhQ42nNAoBvIhSYxlzmtkBSNnsBcjo
+          FiMszlyOX4Mx3A/gWMKGpJhXFk5EjXOtHUqZNCddmC0DLWrSS38TYye2wMjHfy0Z
+          xIhHacNwet+jZPilFlpmtAOd4wfgHF+aeWZrZXp3u9s73sWDRfNlaRVsthlGc5gl
+          VMMq6yDYtGcX5D1vPHwlBKYvyXdaTPGrQM+cUDGD0XOtxebQLJYYpRwiiMR+GEBd
+          D/QZSG5EBcTlx34jq9E14nhV7f4/jKC+RQEmoF567Hzp+fMI99/VT/d62BuIipID
+          nNAkf3d1Uymoq7Ug1i64uu+mHM/xBh7zP/b4rwIDAQABAoIBAHXBW+F+PoRxiO30
+          sl0KwAANjvrSnYKv00egBJ873ocGTddN6SC4DrKAQW+zeKPzjtgaYTBGoSBZRFWr
+          xfZIjbavx9xRBgpOkOLi6r0WOeRJMg6c/w4aYGzrLt3ZnuHdNegEtf/lQ6qRt/ED
+          S6xlIv3RGD6XxeikbumGo4GqJ9j0Alny84kjTeRHrI6dEl0YqqzaaolgZRqjKMlJ
+          dIut7Vee55QJAAbHRYpsg8nDbz2C3txyJLi/vr15AZwH+WiX6HBSZ4l5Gq2BT58G
+          mlCTecWBGx2rKwNf6kpM1Lmk2ysPh9guuPRzvqZvgnkZ1tKKHLWP/S4/KhnAVbox
+          zUWtLGECgYEA3xbYXyjQrc2zoUuKu7YHnyT/D8oE9oJxEGZuRgcdBJiGWOQuwaPA
+          eLQ4gQumBavsazra89n0za0tSeswbzeV7LHRORGD0/WNbIuGCIjOJRQo6XtoU+ig
+          ya8WydLjtahJ8tesk3HTTZ1mMOzIEfxVrxyvCctoEuli4SYKUEvX1NsCgYEAx12M
+          Z3iDCNzY2DZAMhLl+5VZlddTMv1YwF2XKf8bRNtx6NFfRXDVJfdfvxNYakSjWZ4Q
+          jB57F1bJ8C9pEdd6YsZ735v0C7fex24PwI01IuwdZ8UAhsTigFOCiEgR696ieK1Z
+          S1uIVhkmobyYr1lnbL9CBlDDiHP7h9OuVPJDab0CgYAGKGpGjijcc04fCKfGsKqb
+          MPk9ZVUnvMgELN+kXTPm2ZLzxzCnNa7tZgQdQ8YMaAd5mkFK89w3BS232Z8XotAn
+          nWzqB1q9Mgz6TwufFq+iBGFwuHBTyJsPlh6p6YFRlVidNGjWFRFBFjQo65BGNtHi
+          qIcIXS39P6X0Ewm716wYewKBgB4fRk2D6dh29dSFLeHi9Ri0EhsPs6RqnvRBr8tK
+          niYjOezBZbGqQKpB3BeUprE3ua6asUlaeaKnHE/L+gYWFonCD4lTmOYEXAap3Htt
+          Wm/yWOcK3u994/MbqwdITFzlAItXNbyrEchgeHPLeQ5VZckKhMFLhp+hVonJM/fl
+          usXJAoGBAIFw7jl1u5hGU06ajXYG4hzvwvGubc8PHK2vtBffPhYTAHK3xP8C9NlR
+          xoDK6m0StFVNsQ6B/Yy648kvM+DQ40OJagZ0EdPONRcahOXK0F/Q6yiHhSZcwYdG
+          9/+KhAEEzCAcpz5SCdMCx8quH+8ifEJZJieMTU1WIVugOdHgxqhi
+          -----END RSA PRIVATE KEY-----
+          EOF
           chmod 400 easyway.pem
 
       - name: "Upload deploy script to EC2"
