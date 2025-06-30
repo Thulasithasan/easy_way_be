@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests -Dspring-javaformat.skip=true
 
 # Stage 2: Run with JRE
-FROM eclipse-temurin:17-alpine
+FROM eclipse-temurin:21-alpine
 
 WORKDIR /app
 
