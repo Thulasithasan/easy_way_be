@@ -310,6 +310,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.13.0</version>
 				<configuration>
+					<release>21</release>
 					<annotationProcessorPaths>
 						<!-- Hibernate JPA model generator for Criteria API support -->
 						<path>
