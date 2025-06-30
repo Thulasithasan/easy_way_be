@@ -30,32 +30,32 @@ jobs:
           docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.REPOSITORY }}:latest .
           docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.REPOSITORY }}:latest
 
-deploy-to-EC2:
-  needs: build-docker-image
-  runs-on: ubuntu-latest
+  deploy-to-EC2:
+    needs: build-docker-image
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: "Checkout code"
-      uses: actions/checkout@v3
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
 
-    - name: "List files (debug)"
-      run: ls -la
+      - name: "List files (debug)"
+        run: ls -la
 
-    - name: "Upload deploy script to EC2"
-      uses: appleboy/scp-action@v0.1.4
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        source: "./deploy-easyway.sh"
-        target: "~/deploy/"
+      - name: "Upload deploy script to EC2"
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "./deploy-easyway.sh"
+          target: "~/deploy/"
 
-    - name: "Run script on EC2"
-      uses: appleboy/ssh-action@v1
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          chmod +x ~/deploy/deploy-easyway.sh
-          ~/deploy/deploy-easyway.sh
+      - name: "Run deploy script on EC2"
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            chmod +x ~/deploy/deploy-easyway.sh
+            ~/deploy/deploy-easyway.sh -u ${{ secrets.USERNAME }} -h ${{ secrets.HOST }} -k ~/.ssh/id_rsa
