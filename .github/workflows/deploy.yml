@@ -26,6 +26,8 @@ jobs:
       - name: Build and push Docker image
         env:
           REPOSITORY: ${{ secrets.REPOSITORY }}
+          AWS_ACCOUNT_ID: 267932851334
+          AWS_REGION: ap-south-1
         run: |
           docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${REPOSITORY}:latest .
           docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${REPOSITORY}:latest
