@@ -6,7 +6,7 @@ jobs:
     steps:
       - name: Prepare SSH Key
         run: |
-          echo "${secrets.SSH_KEY }" > easyway.pem
+          echo "${secrets.SSH_KEY}" > easyway.pem
           chmod 400 easyway.pem
 
       - name: Upload deploy script to EC2
@@ -26,7 +26,7 @@ jobs:
           key: ${secrets.SSH_KEY}
           script: |
             chmod +x ~/deploy-easyway.sh      # Make script executable on EC2
-            ~/deploy-easyway.sh -u ${secrets.USERNAME }} -h ${secrets.HOST} -k ./easyway.pem
+            ~/deploy-easyway.sh -u ${secrets.USERNAME} -h ${secrets.HOST} -k ./easyway.pem
 
       - name: Cleanup
         run: rm easyway.pem
