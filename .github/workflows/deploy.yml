@@ -24,7 +24,7 @@ jobs:
 
       - name: Build and push Docker image
         env:
-          REPOSITORY: your-repo-name
+          REPOSITORY: $REPOSITORY
         run: |
           docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest .
           docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest
