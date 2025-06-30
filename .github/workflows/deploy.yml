@@ -13,13 +13,13 @@ build-docker-image:
     - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
     - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
     - aws configure set region $AWS_DEFAULT_REGION
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 311964230292.dkr.ecr.ap-south-1.amazonaws.com
+    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 267932851334.dkr.ecr.ap-south-1.amazonaws.com
   rules:
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == "modify"
       when: on_success
   script:
-    - docker build -t 311964230292.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest .
-    - docker push 311964230292.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest
+    - docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest .
+    - docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest
 
 deploy-to-EC2:
   stage: deploy
@@ -30,12 +30,12 @@ deploy-to-EC2:
   script:
     |
     pwd
-    cat > tandkfoodmart.pem << EOL
+    cat > easyway.pem << EOL
     $SSH_KEY
     EOL
     ls -ltr
-    chmod 400 tandkfoodmart.pem
-    chmod +x deploy-tandk.sh
+    chmod 400 easyway.pem
+    chmod +x deploy-easyway.sh
     ls -ltr
-    ./deploy-tandk.sh -u $USERNAME -h $HOST -k ./tandkfoodmart.pem
-    rm tandkfoodmart.pem
+    ./deploy-easyway.sh -u $USERNAME -h $HOST -k ./easyway.pem
+    rm easyway.pem
