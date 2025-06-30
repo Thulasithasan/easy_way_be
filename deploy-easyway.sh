@@ -11,27 +11,36 @@ while [[ "$#" -gt 0 ]]; do
         -u|--user) USER="$2"; shift ;;
         -h|--host) HOST="$2"; shift ;;
         -k|--key) SSH_KEY="$2"; shift ;;
-        *) echo "Unknown parameter passed"; exit 1 ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
 done
 
-# Check if required arguments are provided
+# Validate required parameters
 if [ -z "$USER" ] || [ -z "$HOST" ] || [ -z "$SSH_KEY" ]; then
     echo "Usage: $0 -u <username> -h <host> -k <ssh_key>"
     exit 1
 fi
 
-# SSH into the server and execute Docker commands
-ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -p "22" "$USER"@"$HOST" << EOF
-    echo "Logged in to $HOST"
-    sudo su
-    cd /home/ubuntu
-    ls -ltr
-    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 267932851334.dkr.ecr.ap-south-1.amazonaws.com
-    sudo docker ps -aq | xargs sudo docker stop || true
-    sudo docker ps -aq | xargs sudo docker rm || true
-    sudo docker rmi -f \$(sudo docker images -a -q) || true
-    sudo docker compose up -d
+# SSH and run deployment commands
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$USER@$HOST" << EOF
+    echo "✅ Logged in to $HOST"
+    cd /home/ubuntu || exit 1
 
+    echo "🧼 Cleaning up old Docker containers/images..."
+    docker ps -aq | xargs -r docker stop
+    docker ps -aq | xargs -r docker rm
+    docker images -q | xargs -r docker rmi -f
+
+    echo "🔐 Logging into AWS ECR..."
+    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 267932851334.dkr.ecr.ap-south-1.amazonaws.com
+
+    echo "🚀 Pulling latest image from ECR..."
+    docker pull 267932851334.dkr.ecr.ap-south-1.amazonaws.com/easyway:latest
+
+    echo "📦 Starting application with Docker Compose..."
+    docker compose down || true
+    docker compose up -d
+
+    echo "✅ Deployment completed successfully."
 EOF
