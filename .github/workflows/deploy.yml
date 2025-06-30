@@ -1,41 +1,52 @@
-stages:
-  - build
-  - deploy
+name: Build and Deploy on main
 
-build-docker-image:
-  stage: build
-  image: docker:stable
-  services:
-    - docker:dind
-  before_script:
-    - apk add --no-cache curl jq python3 py3-pip
-    - pip install awscli
-    - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-    - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-    - aws configure set region $AWS_DEFAULT_REGION
-    - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 267932851334.dkr.ecr.ap-south-1.amazonaws.com
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == "modify"
-      when: on_success
-  script:
-    - docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest .
-    - docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest
+on:
+  push:
+    branches:
+      - main    # Trigger only on pushes to main branch
 
-deploy-to-EC2:
-  stage: deploy
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_REF_NAME == "main"
-      when: on_success
-  needs: ['build-docker-image']
-  script:
-    |
-    pwd
-    cat > easyway.pem << EOL
-    $SSH_KEY
-    EOL
-    ls -ltr
-    chmod 400 easyway.pem
-    chmod +x deploy-easyway.sh
-    ls -ltr
-    ./deploy-easyway.sh -u $USERNAME -h $HOST -k ./easyway.pem
-    rm easyway.pem
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        env:
+          REPOSITORY: your-repo-name
+        run: |
+          docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest .
+          docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest
+
+  deploy-to-EC2:
+    needs: build-docker-image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Prepare SSH Key
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > easyway.pem
+          chmod 400 easyway.pem
+
+      - name: Deploy on EC2 via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            ./deploy-easyway.sh -u ${{ secrets.EC2_USER }} -h ${{ secrets.EC2_HOST }} -k ./easyway.pem
+
+      - name: Cleanup
+        run: rm easyway.pem
