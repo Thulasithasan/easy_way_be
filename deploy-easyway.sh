@@ -14,7 +14,7 @@ jobs:
         with:
           host: ${secrets.HOST}
           username: ${secrets.USERNAME}
-          key: $secrets.SSH_KEY}
+          key: ${secrets.SSH_KEY}
           source: ./deploy-easyway.sh       # This is your local script path in your repo
           target: ~/deploy-easyway.sh       # Path on EC2 server
 
