@@ -38,10 +38,15 @@ jobs:
       - name: "Checkout code"
         uses: actions/checkout@v3
 
-      - name: "Create PEM file for local use"
+      - name: "Make PEM file for temporary use"
         run: |
           echo "${{ secrets.SSH_KEY }}" > easyway.pem
           chmod 400 easyway.pem
+
+      - name: "Check files exist before upload"
+        run: |
+          ls -l deploy-easyway.sh
+          ls -l easyway.pem
 
       - name: "Upload deploy script and PEM to EC2"
         uses: appleboy/scp-action@v0.1.4
@@ -50,9 +55,9 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           source: |
-            ./deploy-easyway.sh
+            deploy-easyway.sh
             easyway.pem
-          target: ~/deploy/
+          target: "~/deploy/"
 
       - name: "Run deploy script on EC2"
         uses: appleboy/ssh-action@v1
