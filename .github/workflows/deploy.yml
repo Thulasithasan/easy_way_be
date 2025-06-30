@@ -24,10 +24,10 @@ jobs:
 
       - name: Build and push Docker image
         env:
-          REPOSITORY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          REPOSITORY: ${{ secrets.REPOSITORY }}
         run: |
-          docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.AWS_ACCESS_KEY_ID }}:latest .
-          docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.AWS_ACCESS_KEY_ID }}:latest
+          docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.REPOSITORY }}:latest .
+          docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.REPOSITORY }}:latest
 
   deploy-to-EC2:
     needs: build-docker-image
