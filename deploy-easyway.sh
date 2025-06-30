@@ -1,32 +1,37 @@
-jobs:
-  deploy-to-EC2:
-    needs: build-docker-image
-    runs-on: ubuntu-latest
+#!/bin/bash
 
-    steps:
-      - name: Prepare SSH Key
-        run: |
-          echo "${secrets.SSH_KEY}" > easyway.pem
-          chmod 400 easyway.pem
+# Default values
+USER=""
+HOST=""
+SSH_KEY=""
 
-      - name: Upload deploy script to EC2
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${secrets.HOST}
-          username: ${secrets.USERNAME}
-          key: ${secrets.SSH_KEY}
-          source: ./deploy-easyway.sh       # This is your local script path in your repo
-          target: ~/deploy-easyway.sh       # Path on EC2 server
+# Parse named arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        -u|--user) USER="$2"; shift ;;
+        -h|--host) HOST="$2"; shift ;;
+        -k|--key) SSH_KEY="$2"; shift ;;
+        *) echo "Unknown parameter passed"; exit 1 ;;
+    esac
+    shift
+done
 
-      - name: Deploy on EC2 via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${secrets.HOST}
-          username: ${secrets.USERNAME}
-          key: ${secrets.SSH_KEY}
-          script: |
-            chmod +x ~/deploy-easyway.sh      # Make script executable on EC2
-            ~/deploy-easyway.sh -u ${secrets.USERNAME} -h ${secrets.HOST} -k ./easyway.pem
+# Check if required arguments are provided
+if [ -z "$USER" ] || [ -z "$HOST" ] || [ -z "$SSH_KEY" ]; then
+    echo "Usage: $0 -u <username> -h <host> -k <ssh_key>"
+    exit 1
+fi
 
-      - name: Cleanup
-        run: rm easyway.pem
+# SSH into the server and execute Docker commands
+ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no -p "22" "$USER"@"$HOST" << EOF
+    echo "Logged in to $HOST"
+    sudo su
+    cd /home/ubuntu
+    ls -ltr
+    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 267932851334.dkr.ecr.ap-south-1.amazonaws.com
+    sudo docker ps -aq | xargs sudo docker stop || true
+    sudo docker ps -aq | xargs sudo docker rm || true
+    sudo docker rmi -f \$(sudo docker images -a -q) || true
+    sudo docker compose up -d
+
+EOF
