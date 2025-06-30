@@ -24,10 +24,10 @@ jobs:
 
       - name: Build and push Docker image
         env:
-          REPOSITORY: easyway
+          REPOSITORY: ${{ secrets.AWS_ACCESS_KEY_ID }}
         run: |
-          docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest .
-          docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/$REPOSITORY:latest
+          docker build -t 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.AWS_ACCESS_KEY_ID }}:latest .
+          docker push 267932851334.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.AWS_ACCESS_KEY_ID }}:latest
 
   deploy-to-EC2:
     needs: build-docker-image
@@ -42,11 +42,11 @@ jobs:
       - name: Deploy on EC2 via SSH
         uses: appleboy/ssh-action@v1
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            ./deploy-easyway.sh -u ${{ secrets.EC2_USER }} -h ${{ secrets.EC2_HOST }} -k ./easyway.pem
+            ./deploy-easyway.sh -u ${{ secrets.USERNAME }} -h ${{ secrets.HOST }} -k ./easyway.pem
 
       - name: Cleanup
         run: rm easyway.pem
