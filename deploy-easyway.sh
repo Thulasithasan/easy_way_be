@@ -33,10 +33,10 @@ ssh -i "$SSH_KEY" -o StrictHostKeyChecking=no "$USER@$HOST" << EOF
     docker images -q | xargs -r docker rmi -f
 
     echo "🔐 Logging into AWS ECR..."
-    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 267932851334.dkr.ecr.ap-south-1.amazonaws.com
+    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 566619001659.dkr.ecr.ap-south-1.amazonaws.com
 
     echo "🚀 Pulling latest image from ECR..."
-    docker pull 267932851334.dkr.ecr.ap-south-1.amazonaws.com/easyway:latest
+    docker pull 566619001659.dkr.ecr.ap-south-1.amazonaws.com/easywaybe:latest
 
     echo "📦 Starting application with Docker Compose..."
     docker compose down || true
