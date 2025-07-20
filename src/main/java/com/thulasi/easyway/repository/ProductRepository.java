@@ -17,7 +17,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 			"JOIN p.nameTranslations pn " +
 			"JOIN p.subCategory sc " +
 			"JOIN sc.category c " +
-			"WHERE (:productName IS NULL OR LOWER(pn.name) LIKE LOWER(CONCAT('%', :productName, '%'))) " +
+			"WHERE ( " +
+			"    LOWER(pn.name) LIKE LOWER(CONCAT('%', :productName, '%'))" +
+			"    OR :productName IS NULL )" +
 			"AND (:subCategoryId IS NULL OR sc.id = :subCategoryId) " +
 			"AND (:categoryId IS NULL OR c.id = :categoryId)")
 	Page<Product> filterProducts(

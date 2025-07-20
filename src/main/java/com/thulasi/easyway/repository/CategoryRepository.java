@@ -13,7 +13,7 @@ import org.springframework.data.domain.Pageable;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Query("SELECT c FROM Category c " +
-            "WHERE (:categoryName IS NULL OR LOWER(c.name) = LOWER(:categoryName))")
+            "WHERE (LOWER(c.name) = LOWER(:categoryName) OR :categoryName IS NULL)")
     Page<Category> filterCategories(@Param("categoryName") String categoryName, Pageable pageable);
 
 
