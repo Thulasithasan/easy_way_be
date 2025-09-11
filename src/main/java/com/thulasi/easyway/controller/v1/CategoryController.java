@@ -52,4 +52,20 @@ public class CategoryController {
 		ResponseEntityDto response = categoryService.filterCategories(dto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
+
+	@Operation(summary = "Update category", description = "Update category details")
+	@PutMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> updateCategory(
+			@PathVariable Long id,
+			@Valid @RequestBody CategoryRequestDto dto) {
+		ResponseEntityDto response = categoryService.updateCategory(id, dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
+	@Operation(summary = "Change category status", description = "Activate or deactivate a category")
+	@PutMapping(value = "/change-status/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> changeCategoryStatus(@PathVariable Long id) {
+		ResponseEntityDto response = categoryService.changeCategoryStatus(id);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 }

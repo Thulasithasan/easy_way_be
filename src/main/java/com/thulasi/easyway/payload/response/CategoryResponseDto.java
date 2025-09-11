@@ -17,4 +17,5 @@ public class CategoryResponseDto {
 
 	private List<SubCategoryResponseDto> subCategoryResponseDtos;
 
+	private Boolean isActive;
 }
