@@ -6,11 +6,12 @@ import com.thulasi.easyway.payload.response.ResponseEntityDto;
 
 public interface SubCategoryService {
 
-    ResponseEntityDto createSubCategory(SubCategoryRequestDto subCategoryRequestDto);
+	ResponseEntityDto createSubCategory(SubCategoryRequestDto subCategoryRequestDto);
 
-    ResponseEntityDto getAllSubCategories();
+	ResponseEntityDto getAllSubCategories();
 
-    ResponseEntityDto getSubCategoryById(Long id);
+	ResponseEntityDto getSubCategoryById(Long id);
 
-    ResponseEntityDto filterSubCategories(SubCategoryFilterRequestDto dto);
+	ResponseEntityDto filterSubCategories(SubCategoryFilterRequestDto dto);
+
 }

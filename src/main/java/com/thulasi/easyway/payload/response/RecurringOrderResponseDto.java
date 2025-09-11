@@ -9,8 +9,13 @@ import java.util.List;
 @Data
 @Builder
 public class RecurringOrderResponseDto {
-    private List<RecurringOrderItemResponseDto> recurringOrderItemResponseDtos;
-    private BigDecimal totalAmount;
-    private String name;
-    private String note;
+
+	private List<RecurringOrderItemResponseDto> recurringOrderItemResponseDtos;
+
+	private BigDecimal totalAmount;
+
+	private String name;
+
+	private String note;
+
 }

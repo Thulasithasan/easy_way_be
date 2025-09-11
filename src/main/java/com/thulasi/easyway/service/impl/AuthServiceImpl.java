@@ -36,12 +36,19 @@ import java.util.UUID;
 public class AuthServiceImpl implements AuthService {
 
 	private final UserRepository userRepository;
+
 	private final UserDetailsService userDetailsService;
+
 	private final JwtService jwtService;
+
 	private final AuthenticationManager authenticationManager;
+
 	private final PasswordEncoder passwordEncoder;
+
 	private final CommonMapper commonMapper;
+
 	private final UserService userService;
+
 	private final AsyncEmailSender asyncEmailSender;
 
 	@Value("${encryptDecryptAlgorithm.secret}")

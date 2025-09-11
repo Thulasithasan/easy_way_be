@@ -25,45 +25,49 @@ import java.math.BigDecimal;
 @Slf4j
 public class StockIncomeServiceImpl implements StockIncomeService {
 
-    private final StockIncomeRepository stockIncomeRepository;
-    private final StockRepository stockRepository;
-    private final ProductRepository productRepository;
-    private final PurchaseBillRepository purchaseBillRepository;
+	private final StockIncomeRepository stockIncomeRepository;
 
-    @Override
-    public ResponseEntityDto createStockIncome(StockIncomeRequestDto dto) {
-        log.info("createStockIncome: execution started");
+	private final StockRepository stockRepository;
 
-        Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+	private final ProductRepository productRepository;
 
-        PurchaseBill purchaseBill = purchaseBillRepository.findById(dto.getPurchaseBillId())
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PURCHASE_BILL_NOT_FOUND));
+	private final PurchaseBillRepository purchaseBillRepository;
 
-        Stock stock = stockRepository.findByProductId(product.getId())
-                .orElse(Stock.builder()
-                        .product(product)
-                        .quantity(BigDecimal.ZERO)
-                        .reservedQuantity(BigDecimal.ZERO)
-                        .isActive(true)
-                        .build());
+	@Override
+	public ResponseEntityDto createStockIncome(StockIncomeRequestDto dto) {
+		log.info("createStockIncome: execution started");
 
-        stock.setQuantity(stock.getQuantity().add(dto.getQuantity()));
+		Product product = productRepository.findById(dto.getProductId())
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-        stockRepository.save(stock);
+		PurchaseBill purchaseBill = purchaseBillRepository.findById(dto.getPurchaseBillId())
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PURCHASE_BILL_NOT_FOUND));
 
-        StockIncome income = StockIncome.builder()
-                .stock(stock)
-                .quantity(dto.getQuantity())
-                .availableQuantity(dto.getQuantity())
-                .unitBuyingPrice(dto.getUnitBuyingPrice())
-                .totalBuyingAmount(dto.getQuantity().multiply(dto.getUnitBuyingPrice()))
-                .purchaseBill(purchaseBill)
-                .build();
+		Stock stock = stockRepository.findByProductId(product.getId())
+			.orElse(Stock.builder()
+				.product(product)
+				.quantity(BigDecimal.ZERO)
+				.reservedQuantity(BigDecimal.ZERO)
+				.isActive(true)
+				.build());
 
-        stockIncomeRepository.save(income);
+		stock.setQuantity(stock.getQuantity().add(dto.getQuantity()));
 
-        log.info("createStockIncome: execution completed");
-        return new ResponseEntityDto("Stock income created successfully", true);
-    }
+		stockRepository.save(stock);
+
+		StockIncome income = StockIncome.builder()
+			.stock(stock)
+			.quantity(dto.getQuantity())
+			.availableQuantity(dto.getQuantity())
+			.unitBuyingPrice(dto.getUnitBuyingPrice())
+			.totalBuyingAmount(dto.getQuantity().multiply(dto.getUnitBuyingPrice()))
+			.purchaseBill(purchaseBill)
+			.build();
+
+		stockIncomeRepository.save(income);
+
+		log.info("createStockIncome: execution completed");
+		return new ResponseEntityDto("Stock income created successfully", true);
+	}
+
 }

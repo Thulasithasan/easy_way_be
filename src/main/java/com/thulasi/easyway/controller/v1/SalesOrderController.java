@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class SalesOrderController {
 
-    private final SalesOrderService salesOrderService;
+	private final SalesOrderService salesOrderService;
 
-    @Operation(summary = "Create sales order", description = "Create a new sales order")
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> createSalesOrder(@Valid @RequestBody SalesOrderRequestDto dto) {
-        ResponseEntityDto response = salesOrderService.createSalesOrder(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Create sales order", description = "Create a new sales order")
+	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> createSalesOrder(@Valid @RequestBody SalesOrderRequestDto dto) {
+		ResponseEntityDto response = salesOrderService.createSalesOrder(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }

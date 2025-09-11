@@ -8,23 +8,25 @@ import java.util.List;
 import java.util.Map;
 
 public class HomeProductInfoResponseDto {
-    private Long productId;
 
-    private Map<String, String> nameTranslations;
+	private Long productId;
 
-    private String description;
+	private Map<String, String> nameTranslations;
 
-    private BigDecimal measurementValue;
+	private String description;
 
-    private MeasurementUnit measurementUnit;
+	private BigDecimal measurementValue;
 
-    private BigDecimal measurementSellingPrice;
+	private MeasurementUnit measurementUnit;
 
-    private String heroImageSignedUrl;
+	private BigDecimal measurementSellingPrice;
 
-    private List<String> imageSignedUrls;
+	private String heroImageSignedUrl;
 
-    private List<PriceResponseDto> priceResponseDtos;
+	private List<String> imageSignedUrls;
 
-    private Boolean isFavourite;
+	private List<PriceResponseDto> priceResponseDtos;
+
+	private Boolean isFavourite;
+
 }

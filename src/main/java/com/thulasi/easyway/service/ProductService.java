@@ -18,5 +18,6 @@ public interface ProductService {
 
 	ResponseEntityDto deleteProductImage(Long productId, boolean isHeroImage, String key);
 
-    Product getProduct(Long productId);
+	Product getProduct(Long productId);
+
 }

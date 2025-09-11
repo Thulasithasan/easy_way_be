@@ -67,8 +67,8 @@ public class S3ImageHandler {
 
 		// Generate pre-signed URL
 		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, key)
-				.withMethod(HttpMethod.GET)
-				.withExpiration(expiration);
+			.withMethod(HttpMethod.GET)
+			.withExpiration(expiration);
 
 		return s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
 	}

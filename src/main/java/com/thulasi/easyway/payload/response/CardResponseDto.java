@@ -9,6 +9,9 @@ import java.util.List;
 @Data
 @Builder
 public class CardResponseDto {
-    private List<CardItemResponseDto> cardItemResponseDtos;
-    private BigDecimal totalAmount;
+
+	private List<CardItemResponseDto> cardItemResponseDtos;
+
+	private BigDecimal totalAmount;
+
 }

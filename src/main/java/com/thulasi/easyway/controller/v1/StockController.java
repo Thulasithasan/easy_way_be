@@ -18,27 +18,28 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class StockController {
 
-    private final StockService stockService;
+	private final StockService stockService;
 
-    @Operation(summary = "Get home products", description = "Get home products")
-    @GetMapping(value = "/home-products", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> getHomeProducts(@Valid StockFilterRequestDto dto) {
-        ResponseEntityDto response = stockService.getHomeProducts(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Get home products", description = "Get home products")
+	@GetMapping(value = "/home-products", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> getHomeProducts(@Valid StockFilterRequestDto dto) {
+		ResponseEntityDto response = stockService.getHomeProducts(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Get home product info", description = "Get home product info by productId")
-    @GetMapping(value = "/home-product-info/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> getHomeProductInfo(@PathVariable Long productId) {
-        ResponseEntityDto response = stockService.getHomeProductInfo(productId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+	@Operation(summary = "Get home product info", description = "Get home product info by productId")
+	@GetMapping(value = "/home-product-info/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> getHomeProductInfo(@PathVariable Long productId) {
+		ResponseEntityDto response = stockService.getHomeProductInfo(productId);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 
-    }
+	}
 
-    @Operation(summary = "Filter stock", description = "Filter stock")
-    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> filterStock(@Valid StockFilterRequestDto dto) {
-        ResponseEntityDto response = stockService.filterStock(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Filter stock", description = "Filter stock")
+	@GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> filterStock(@Valid StockFilterRequestDto dto) {
+		ResponseEntityDto response = stockService.filterStock(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }

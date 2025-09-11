@@ -9,11 +9,13 @@ import java.math.BigDecimal;
 
 @Data
 public class ItemRequestDto {
-    @NotBlank(message = "Product id is required")
-    @Schema(description = "Product id", example = "1")
-    private Long productId;
 
-    @NotNull(message = "Quantity is required")
-    @Schema(description = "Quantity of the product", example = "10.5")
-    private BigDecimal quantity;
+	@NotBlank(message = "Product id is required")
+	@Schema(description = "Product id", example = "1")
+	private Long productId;
+
+	@NotNull(message = "Quantity is required")
+	@Schema(description = "Quantity of the product", example = "10.5")
+	private BigDecimal quantity;
+
 }

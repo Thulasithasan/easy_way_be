@@ -28,162 +28,154 @@ import static com.thulasi.easyway.util.PageableUtil.buildPageable;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
 
-    private final StockRepository stockRepository;
-    private final PageTransformer pageTransformer;
-    private final S3ImageHandler s3ImageHandler;
-    private final UserService userService;
-    private final FavouriteItemRepository favouriteItemRepository;
+	private final StockRepository stockRepository;
 
-    @Override
-    public ResponseEntityDto getHomeProducts(StockFilterRequestDto dto) {
-        log.info("getHomeProducts: execution started");
+	private final PageTransformer pageTransformer;
 
-        Optional<User> optionalCurrentUser = userService.getOptionalCurrentUser();
+	private final S3ImageHandler s3ImageHandler;
 
-        Page<Stock> stocks = stockRepository.filterStocks(
-                dto.getCategoryId(),
-                dto.getSubCategoryId(),
-                dto.getProductNameLike(),
-                buildPageable(dto.getPageNumber(), dto.getPageSize())
-        );
+	private final UserService userService;
 
-        Set<Long> favouriteProductIds = optionalCurrentUser
-                .map(user -> favouriteItemRepository.findByUserId(user.getId()))
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(fav -> fav.getProduct().getId())
-                .collect(Collectors.toSet());
+	private final FavouriteItemRepository favouriteItemRepository;
 
-        PageDto pageDto = pageTransformer.transform(stocks);
-        pageDto.setItems(
-                stocks.getContent()
-                        .stream()
-                        .map(stock -> mapToHomeProductResponse(stock, favouriteProductIds, false))
-                        .toList());
+	@Override
+	public ResponseEntityDto getHomeProducts(StockFilterRequestDto dto) {
+		log.info("getHomeProducts: execution started");
 
-        log.info("getHomeProducts: execution completed");
-        return new ResponseEntityDto(true, pageDto);
-    }
+		Optional<User> optionalCurrentUser = userService.getOptionalCurrentUser();
 
-    @Override
-    public ResponseEntityDto getHomeProductInfo(Long productId) {
-        log.info("getHomeProductInfo: execution started");
+		Page<Stock> stocks = stockRepository.filterStocks(dto.getCategoryId(), dto.getSubCategoryId(),
+				dto.getProductNameLike(), buildPageable(dto.getPageNumber(), dto.getPageSize()));
 
-        Stock stock = stockRepository.findByProductId(productId)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
+		Set<Long> favouriteProductIds = optionalCurrentUser
+			.map(user -> favouriteItemRepository.findByUserId(user.getId()))
+			.orElse(Collections.emptyList())
+			.stream()
+			.map(fav -> fav.getProduct().getId())
+			.collect(Collectors.toSet());
 
-        Optional<User> optionalCurrentUser = userService.getOptionalCurrentUser();
+		PageDto pageDto = pageTransformer.transform(stocks);
+		pageDto.setItems(stocks.getContent()
+			.stream()
+			.map(stock -> mapToHomeProductResponse(stock, favouriteProductIds, false))
+			.toList());
 
-        Set<Long> ids = optionalCurrentUser
-                .flatMap(user -> favouriteItemRepository.findByUserIdAndProductId(user.getId(), productId))
-                .map(favouriteItem -> Set.of(favouriteItem.getId()))
-                .orElseGet(HashSet::new);
+		log.info("getHomeProducts: execution completed");
+		return new ResponseEntityDto(true, pageDto);
+	}
 
-        HomeProductsResponseDto homeProductsResponseDto = mapToHomeProductResponse(stock, ids, true);
+	@Override
+	public ResponseEntityDto getHomeProductInfo(Long productId) {
+		log.info("getHomeProductInfo: execution started");
 
-        log.info("getHomeProductInfo: execution completed");
-        return new ResponseEntityDto(true, homeProductsResponseDto);
-    }
+		Stock stock = stockRepository.findByProductId(productId)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
 
-    @Override
-    public ResponseEntityDto filterStock(StockFilterRequestDto dto) {
-        log.info("getCurrentStock: execution started");
-        Page<Stock> stocks = stockRepository.filterStocks(dto.getCategoryId(), dto.getSubCategoryId(),
-                dto.getProductNameLike(), buildPageable(dto.getPageNumber(), dto.getPageSize()));
+		Optional<User> optionalCurrentUser = userService.getOptionalCurrentUser();
 
-        PageDto pageDto = pageTransformer.transform(stocks);
+		Set<Long> ids = optionalCurrentUser
+			.flatMap(user -> favouriteItemRepository.findByUserIdAndProductId(user.getId(), productId))
+			.map(favouriteItem -> Set.of(favouriteItem.getId()))
+			.orElseGet(HashSet::new);
 
-        pageDto.setItems(stocks.getContent()
-                .stream()
-                .map(this::mapToProductResponse)
-                .toList());
+		HomeProductsResponseDto homeProductsResponseDto = mapToHomeProductResponse(stock, ids, true);
 
-        log.info("getCurrentStock: execution completed");
-        return new ResponseEntityDto(true, pageDto);
-    }
+		log.info("getHomeProductInfo: execution completed");
+		return new ResponseEntityDto(true, homeProductsResponseDto);
+	}
 
-    private HomeProductsResponseDto mapToHomeProductResponse(Stock stock, Set<Long> favouriteIds, Boolean images) {
-        Product product = stock.getProduct();
+	@Override
+	public ResponseEntityDto filterStock(StockFilterRequestDto dto) {
+		log.info("getCurrentStock: execution started");
+		Page<Stock> stocks = stockRepository.filterStocks(dto.getCategoryId(), dto.getSubCategoryId(),
+				dto.getProductNameLike(), buildPageable(dto.getPageNumber(), dto.getPageSize()));
 
-        List<String> signedUrlImages = new ArrayList<>();
-        if (Boolean.TRUE.equals(images)) {
-            signedUrlImages = product.getImages().stream()
-                    .map(this::getSignedUrl).toList();
-        }
-        return HomeProductsResponseDto.builder()
-                .productId(product.getId())
-                .nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
-                .description(product.getDescription())
-                .measurementUnit(product.getMeasurementUnit())
-                .measurementValue(product.getMeasurementValue())
-                .heroImageSignedUrl(s3ImageHandler.getImageUrl(product.getHeroImage()))
-                .isFavourite(favouriteIds.contains(product.getId()))
-                .measurementSellingPrice(getDefaultSellingPrice(stock))
-                .images(signedUrlImages)
-                .build();
-    }
+		PageDto pageDto = pageTransformer.transform(stocks);
 
-    private ProductResponseDto mapToProductResponse(Stock stock) {
-        Product product = stock.getProduct();
+		pageDto.setItems(stocks.getContent().stream().map(this::mapToProductResponse).toList());
 
-        String heroImageSignedUrl = product.getHeroImage() != null ?
-                getSignedUrl(product.getHeroImage()) : null;
+		log.info("getCurrentStock: execution completed");
+		return new ResponseEntityDto(true, pageDto);
+	}
 
-        List<String> signedUrlImages = product.getImages().stream()
-                .map(this::getSignedUrl).toList();
+	private HomeProductsResponseDto mapToHomeProductResponse(Stock stock, Set<Long> favouriteIds, Boolean images) {
+		Product product = stock.getProduct();
 
-        return ProductResponseDto.builder()
-                .productId(product.getId())
-                .nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
-                .description(product.getDescription())
-                .measurementUnit(product.getMeasurementUnit())
-                .measurementValue(product.getMeasurementValue())
-                .heroImageSignedUrl(heroImageSignedUrl)
-                .images(signedUrlImages)
-                .measurementSellingPrice(getDefaultSellingPrice(stock))
-                .priceResponseDtos(mapToPriceResponseDtos(stock.getPrices()))
-                .quantity(stock.getQuantity())
-                .build();
-    }
+		List<String> signedUrlImages = new ArrayList<>();
+		if (Boolean.TRUE.equals(images)) {
+			signedUrlImages = product.getImages().stream().map(this::getSignedUrl).toList();
+		}
+		return HomeProductsResponseDto.builder()
+			.productId(product.getId())
+			.nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
+			.description(product.getDescription())
+			.measurementUnit(product.getMeasurementUnit())
+			.measurementValue(product.getMeasurementValue())
+			.heroImageSignedUrl(s3ImageHandler.getImageUrl(product.getHeroImage()))
+			.isFavourite(favouriteIds.contains(product.getId()))
+			.measurementSellingPrice(getDefaultSellingPrice(stock))
+			.images(signedUrlImages)
+			.build();
+	}
 
-    private BigDecimal getDefaultSellingPrice(Stock stock) {
-        return stock.getPrices().stream()
-                .filter(Price::getIsDefault)
-                .map(Price::getFinalPrice)
-                .findFirst()
-                .orElse(BigDecimal.ZERO);
-    }
+	private ProductResponseDto mapToProductResponse(Stock stock) {
+		Product product = stock.getProduct();
 
-    private List<PriceResponseDto> mapToPriceResponseDtos(List<Price> prices) {
-        return prices.stream().map(this::mapToPriceResponseDto).toList();
-    }
+		String heroImageSignedUrl = product.getHeroImage() != null ? getSignedUrl(product.getHeroImage()) : null;
 
-    private PriceResponseDto mapToPriceResponseDto(Price price) {
-        return PriceResponseDto.builder()
-                .priceId(price.getId())
-                .actualPrice(price.getActualPrice())
-                .unit(price.getUnit())
-                .quantity(price.getQuantity())
-                .discountAmount(price.getDiscountAmount())
-                .discountPercent(price.getDiscountPercent())
-                .finalPrice(price.getFinalPrice())
-                .isDefault(price.getIsDefault())
-                .isActive(price.getIsActive())
-                .build();
-    }
+		List<String> signedUrlImages = product.getImages().stream().map(this::getSignedUrl).toList();
 
-    private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
-        return productNames.stream().map(this::mapToProductNameResponseDto).toList();
-    }
+		return ProductResponseDto.builder()
+			.productId(product.getId())
+			.nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
+			.description(product.getDescription())
+			.measurementUnit(product.getMeasurementUnit())
+			.measurementValue(product.getMeasurementValue())
+			.heroImageSignedUrl(heroImageSignedUrl)
+			.images(signedUrlImages)
+			.measurementSellingPrice(getDefaultSellingPrice(stock))
+			.priceResponseDtos(mapToPriceResponseDtos(stock.getPrices()))
+			.quantity(stock.getQuantity())
+			.build();
+	}
 
-    private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
-        return ProductNameResponseDto.builder()
-                .language(productName.getLanguage())
-                .name(productName.getName())
-                .build();
-    }
+	private BigDecimal getDefaultSellingPrice(Stock stock) {
+		return stock.getPrices()
+			.stream()
+			.filter(Price::getIsDefault)
+			.map(Price::getFinalPrice)
+			.findFirst()
+			.orElse(BigDecimal.ZERO);
+	}
 
-    private String getSignedUrl(String key) {
-        return key != null ? s3ImageHandler.getImageUrl(key) : null;
-    }
+	private List<PriceResponseDto> mapToPriceResponseDtos(List<Price> prices) {
+		return prices.stream().map(this::mapToPriceResponseDto).toList();
+	}
+
+	private PriceResponseDto mapToPriceResponseDto(Price price) {
+		return PriceResponseDto.builder()
+			.priceId(price.getId())
+			.actualPrice(price.getActualPrice())
+			.unit(price.getUnit())
+			.quantity(price.getQuantity())
+			.discountAmount(price.getDiscountAmount())
+			.discountPercent(price.getDiscountPercent())
+			.finalPrice(price.getFinalPrice())
+			.isDefault(price.getIsDefault())
+			.isActive(price.getIsActive())
+			.build();
+	}
+
+	private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
+		return productNames.stream().map(this::mapToProductNameResponseDto).toList();
+	}
+
+	private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
+		return ProductNameResponseDto.builder().language(productName.getLanguage()).name(productName.getName()).build();
+	}
+
+	private String getSignedUrl(String key) {
+		return key != null ? s3ImageHandler.getImageUrl(key) : null;
+	}
+
 }

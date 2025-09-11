@@ -56,7 +56,7 @@ public class CategoryController {
 	@Operation(summary = "Update category", description = "Update category details")
 	@PutMapping(value = "/update/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<ResponseEntityDto> updateCategory(@PathVariable Long id,
-															@Valid @RequestBody CategoryRequestDto dto) {
+			@Valid @RequestBody CategoryRequestDto dto) {
 		ResponseEntityDto response = categoryService.updateCategory(id, dto);
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}

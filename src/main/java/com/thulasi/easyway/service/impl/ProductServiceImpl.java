@@ -36,185 +36,189 @@ import static com.thulasi.easyway.util.PageableUtil.buildPageable;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
-    private final PageTransformer pageTransformer;
-    private final S3ImageHandler s3ImageHandler;
-    private final StockRepository stockRepository;
-    private final FavouriteItemRepository favouriteItemRepository;
-    private final UserService userService;
-    private final ProductNameRepository productNameRepository;
+	private final ProductRepository productRepository;
 
-    @Override
-    public ResponseEntityDto createProduct(ProductRequestDto productRequestDto) {
-        log.info("createProduct: execution started");
+	private final PageTransformer pageTransformer;
 
-        Product product = Product.builder()
-                .description(productRequestDto.getDescription())
-                .measurementValue(productRequestDto.getMeasurementValue())
-                .measurementUnit(productRequestDto.getMeasurementUnit())
-                .subCategory(SubCategory.builder().id(productRequestDto.getSubCategoryId()).build())
-                .images(new ArrayList<>())
-                .build();
+	private final S3ImageHandler s3ImageHandler;
 
-        Map<String, String> nameTranslations = productRequestDto.getNameTranslations();
-        Product savedProduct = productRepository.save(product);
+	private final StockRepository stockRepository;
 
-        List<ProductName> productNames = nameTranslations.entrySet().stream()
-                .map(entry -> ProductName.builder()
-                        .name(entry.getValue())
-                        .language(entry.getKey())
-                        .product(savedProduct)
-                        .build())
-                .toList();
+	private final FavouriteItemRepository favouriteItemRepository;
 
-        productNameRepository.saveAll(productNames);
+	private final UserService userService;
 
-        log.info("createProduct: execution completed");
-        return new ResponseEntityDto("Product created successfully", true);
-    }
+	private final ProductNameRepository productNameRepository;
 
-    @Override
-    public ResponseEntityDto getProductById(Long id) {
-        log.info("getProductById: execution started");
-        Product product = productRepository.findById(id)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+	@Override
+	public ResponseEntityDto createProduct(ProductRequestDto productRequestDto) {
+		log.info("createProduct: execution started");
 
-        ProductResponseDto productResponseDto = mapToProductResponseDto(product);
+		Product product = Product.builder()
+			.description(productRequestDto.getDescription())
+			.measurementValue(productRequestDto.getMeasurementValue())
+			.measurementUnit(productRequestDto.getMeasurementUnit())
+			.subCategory(SubCategory.builder().id(productRequestDto.getSubCategoryId()).build())
+			.images(new ArrayList<>())
+			.build();
 
-        log.info("getProductById: execution completed");
-        return new ResponseEntityDto(true, productResponseDto);
-    }
+		Map<String, String> nameTranslations = productRequestDto.getNameTranslations();
+		Product savedProduct = productRepository.save(product);
 
-    @Override
-    public ResponseEntityDto filterProducts(ProductFilterRequestDto productFilterRequestDto) {
-        log.info("filterProducts: execution started");
+		List<ProductName> productNames = nameTranslations.entrySet()
+			.stream()
+			.map(entry -> ProductName.builder()
+				.name(entry.getValue())
+				.language(entry.getKey())
+				.product(savedProduct)
+				.build())
+			.toList();
 
-        Page<Product> products = productRepository.filterProducts(productFilterRequestDto.getProductName(),
-                productFilterRequestDto.getSubCategoryId(), productFilterRequestDto.getCategoryId(),
-                buildPageable(productFilterRequestDto.getPageNumber(), productFilterRequestDto.getPageSize()));
+		productNameRepository.saveAll(productNames);
 
-        PageDto pageDto = pageTransformer.transform(products);
+		log.info("createProduct: execution completed");
+		return new ResponseEntityDto("Product created successfully", true);
+	}
 
-        pageDto.setItems(products.getContent()
-                .stream()
-                .map(product -> ProductResponseDto.builder()
-                        .productId(product.getId())
-                        .nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
-                        .description(product.getDescription())
-                        .measurementValue(product.getMeasurementValue())
-                        .measurementUnit(product.getMeasurementUnit())
-                        .heroImageSignedUrl(getSignedUrl(product.getHeroImage()))
-                        .subCategoryId(product.getSubCategory().getId())
-                        .build())
-                .toList());
+	@Override
+	public ResponseEntityDto getProductById(Long id) {
+		log.info("getProductById: execution started");
+		Product product = productRepository.findById(id)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-        log.info("filterProducts: execution completed");
-        return new ResponseEntityDto(true, pageDto);
-    }
+		ProductResponseDto productResponseDto = mapToProductResponseDto(product);
 
-    @Override
-    public ResponseEntityDto uploadProductImage(Long productId, boolean isHeroImage, MultipartFile file) {
-        log.info("productImageUpload: execution started");
+		log.info("getProductById: execution completed");
+		return new ResponseEntityDto(true, productResponseDto);
+	}
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+	@Override
+	public ResponseEntityDto filterProducts(ProductFilterRequestDto productFilterRequestDto) {
+		log.info("filterProducts: execution started");
 
-        Map<String, String> uploadedImage = s3ImageHandler.uploadImage("products/", file);
+		Page<Product> products = productRepository.filterProducts(productFilterRequestDto.getProductName(),
+				productFilterRequestDto.getSubCategoryId(), productFilterRequestDto.getCategoryId(),
+				buildPageable(productFilterRequestDto.getPageNumber(), productFilterRequestDto.getPageSize()));
 
-        String imageKeyUrl = uploadedImage.get("key") + uploadedImage.get("url");
-        if (isHeroImage) {
-            product.setHeroImage(imageKeyUrl);
-        } else {
-            List<String> images = product.getImages();
-            images.add(imageKeyUrl);
-            product.setImages(images);
-        }
+		PageDto pageDto = pageTransformer.transform(products);
 
-        productRepository.save(product);
+		pageDto.setItems(products.getContent()
+			.stream()
+			.map(product -> ProductResponseDto.builder()
+				.productId(product.getId())
+				.nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
+				.description(product.getDescription())
+				.measurementValue(product.getMeasurementValue())
+				.measurementUnit(product.getMeasurementUnit())
+				.heroImageSignedUrl(getSignedUrl(product.getHeroImage()))
+				.subCategoryId(product.getSubCategory().getId())
+				.build())
+			.toList());
 
-        log.info("productImageUpload: execution completed");
-        return new ResponseEntityDto(true, uploadedImage);
-    }
+		log.info("filterProducts: execution completed");
+		return new ResponseEntityDto(true, pageDto);
+	}
 
-    @Override
-    public ResponseEntityDto deleteProductImage(Long productId, boolean isHeroImage, String key) {
-        log.info("productImageDelete: execution started");
+	@Override
+	public ResponseEntityDto uploadProductImage(Long productId, boolean isHeroImage, MultipartFile file) {
+		log.info("productImageUpload: execution started");
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-        s3ImageHandler.deleteImage(key);
+		Map<String, String> uploadedImage = s3ImageHandler.uploadImage("products/", file);
 
+		String imageKeyUrl = uploadedImage.get("key") + uploadedImage.get("url");
+		if (isHeroImage) {
+			product.setHeroImage(imageKeyUrl);
+		}
+		else {
+			List<String> images = product.getImages();
+			images.add(imageKeyUrl);
+			product.setImages(images);
+		}
 
-        if (isHeroImage) {
-            product.setHeroImage(null);
-        } else {
-            List<String> images = product.getImages();
-            images.remove(key);
+		productRepository.save(product);
 
-            product.setImages(images);
-        }
+		log.info("productImageUpload: execution completed");
+		return new ResponseEntityDto(true, uploadedImage);
+	}
 
-        productRepository.save(product);
+	@Override
+	public ResponseEntityDto deleteProductImage(Long productId, boolean isHeroImage, String key) {
+		log.info("productImageDelete: execution started");
 
-        log.info("productImageDelete: execution completed");
-        return new ResponseEntityDto("Product image deleted successfully", true);
-    }
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-    @Override
-    public Product getProduct(Long productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
-    }
+		s3ImageHandler.deleteImage(key);
 
-    private ProductResponseDto mapToProductResponseDto(Product product) {
-        String heroImageSignedUrl = product.getHeroImage() != null ?
-                getSignedUrl(product.getHeroImage()) : null;
+		if (isHeroImage) {
+			product.setHeroImage(null);
+		}
+		else {
+			List<String> images = product.getImages();
+			images.remove(key);
 
-        List<String> signedUrlImages = product.getImages().stream()
-                .map(this::getSignedUrl).toList();
+			product.setImages(images);
+		}
 
-        List<PriceResponseDto> priceResponseDtos = stockRepository.findByProductId(product.getId())
-                .map(stock -> stock.getPrices().stream().map(this::mapToPriceResponseDto).toList())
-                .orElse(List.of());
+		productRepository.save(product);
 
-        return ProductResponseDto.builder()
-                .productId(product.getId())
-                .nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
-                .description(product.getDescription())
-                .measurementValue(product.getMeasurementValue())
-                .measurementUnit(product.getMeasurementUnit())
-                .heroImageSignedUrl(heroImageSignedUrl)
-                .images(signedUrlImages)
-                .subCategoryId(product.getSubCategory().getId())
-                .priceResponseDtos(priceResponseDtos)
-                .build();
-    }
+		log.info("productImageDelete: execution completed");
+		return new ResponseEntityDto("Product image deleted successfully", true);
+	}
 
-    private String getSignedUrl(String key) {
-        return key != null ? s3ImageHandler.getImageUrl(key) : null;
-    }
+	@Override
+	public Product getProduct(Long productId) {
+		return productRepository.findById(productId)
+			.orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+	}
 
-    private PriceResponseDto mapToPriceResponseDto(Price price) {
-        return PriceResponseDto.builder()
-                .priceId(price.getId())
-                .actualPrice(price.getActualPrice())
-                .quantity(price.getQuantity())
-                .unit(price.getUnit())
-                .discountPercent(price.getDiscountPercent())
-                .discountAmount(price.getDiscountAmount())
-                .finalPrice(price.getFinalPrice())
-                .build();
-    }
+	private ProductResponseDto mapToProductResponseDto(Product product) {
+		String heroImageSignedUrl = product.getHeroImage() != null ? getSignedUrl(product.getHeroImage()) : null;
 
-    private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
-        return productNames.stream().map(this::mapToProductNameResponseDto).toList();
-    }
+		List<String> signedUrlImages = product.getImages().stream().map(this::getSignedUrl).toList();
 
-    private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
-        return ProductNameResponseDto.builder()
-                .language(productName.getLanguage())
-                .name(productName.getName())
-                .build();
-    }
+		List<PriceResponseDto> priceResponseDtos = stockRepository.findByProductId(product.getId())
+			.map(stock -> stock.getPrices().stream().map(this::mapToPriceResponseDto).toList())
+			.orElse(List.of());
+
+		return ProductResponseDto.builder()
+			.productId(product.getId())
+			.nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
+			.description(product.getDescription())
+			.measurementValue(product.getMeasurementValue())
+			.measurementUnit(product.getMeasurementUnit())
+			.heroImageSignedUrl(heroImageSignedUrl)
+			.images(signedUrlImages)
+			.subCategoryId(product.getSubCategory().getId())
+			.priceResponseDtos(priceResponseDtos)
+			.build();
+	}
+
+	private String getSignedUrl(String key) {
+		return key != null ? s3ImageHandler.getImageUrl(key) : null;
+	}
+
+	private PriceResponseDto mapToPriceResponseDto(Price price) {
+		return PriceResponseDto.builder()
+			.priceId(price.getId())
+			.actualPrice(price.getActualPrice())
+			.quantity(price.getQuantity())
+			.unit(price.getUnit())
+			.discountPercent(price.getDiscountPercent())
+			.discountAmount(price.getDiscountAmount())
+			.finalPrice(price.getFinalPrice())
+			.build();
+	}
+
+	private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
+		return productNames.stream().map(this::mapToProductNameResponseDto).toList();
+	}
+
+	private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
+		return ProductNameResponseDto.builder().language(productName.getLanguage()).name(productName.getName()).build();
+	}
+
 }

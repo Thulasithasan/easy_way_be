@@ -6,5 +6,6 @@ import jakarta.transaction.Transactional;
 
 public interface SalesOrderService {
 
-    ResponseEntityDto createSalesOrder(SalesOrderRequestDto dto);
+	ResponseEntityDto createSalesOrder(SalesOrderRequestDto dto);
+
 }

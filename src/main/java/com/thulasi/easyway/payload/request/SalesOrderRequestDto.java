@@ -9,12 +9,21 @@ import java.util.List;
 
 @Data
 public class SalesOrderRequestDto {
-    private SalesOrderType type;
-    private SalesOrderStatus status;
-    List<Long> cardItemIds;
-    private BigDecimal totalQuantity;
-    private BigDecimal totalWeight;
-    private Long customerId;
-    private Long salesPersonId;
-    private Long deliveryPersonId;
+
+	private SalesOrderType type;
+
+	private SalesOrderStatus status;
+
+	List<Long> cardItemIds;
+
+	private BigDecimal totalQuantity;
+
+	private BigDecimal totalWeight;
+
+	private Long customerId;
+
+	private Long salesPersonId;
+
+	private Long deliveryPersonId;
+
 }

@@ -9,7 +9,11 @@ import java.util.List;
 @Data
 @Builder
 public class FavouriteItemResponseDto {
-    private Long id;
-    private List<ProductNameResponseDto> productNameResponseDtos;
-    private String heroImageSignedUrl;
+
+	private Long id;
+
+	private List<ProductNameResponseDto> productNameResponseDtos;
+
+	private String heroImageSignedUrl;
+
 }

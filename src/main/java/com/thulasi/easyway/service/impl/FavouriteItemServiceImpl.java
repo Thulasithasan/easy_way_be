@@ -22,77 +22,78 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FavouriteItemServiceImpl implements FavouriteItemService {
 
-    private final FavouriteItemRepository favouriteItemRepository;
-    private final UserService userService;
-    private final PageTransformer pageTransformer;
-    private final ProductService productService;
-    private final S3ImageHandler s3ImageHandler;
+	private final FavouriteItemRepository favouriteItemRepository;
 
-    @Override
-    public ResponseEntityDto addFavourite(Long productId) {
-        log.info("addFavourite: execution started");
-        User currentUser = userService.getCurrentUser();
+	private final UserService userService;
 
-        boolean exists = favouriteItemRepository.existsByUserIdAndProductId(currentUser.getId(), productId);
+	private final PageTransformer pageTransformer;
 
-        Product product = productService.getProduct(productId);
+	private final ProductService productService;
 
-        if (!exists) {
-            favouriteItemRepository.save(FavouriteItem.builder()
-                    .userId(currentUser.getId())
-                    .product(product)
-                    .build());
-        }
+	private final S3ImageHandler s3ImageHandler;
 
-        log.info("addFavourite: execution completed");
-        return new ResponseEntityDto("Favourite item added successfully", true);
-    }
+	@Override
+	public ResponseEntityDto addFavourite(Long productId) {
+		log.info("addFavourite: execution started");
+		User currentUser = userService.getCurrentUser();
 
-    @Override
-    public ResponseEntityDto removeFavourite(Long productId) {
-        log.info("removeFavourite: execution started");
+		boolean exists = favouriteItemRepository.existsByUserIdAndProductId(currentUser.getId(), productId);
 
-        User currentUser = userService.getCurrentUser();
+		Product product = productService.getProduct(productId);
 
-        Optional<FavouriteItem> optionalFavouriteItem = favouriteItemRepository
-                .findByUserIdAndProductId(currentUser.getId(), productId);
+		if (!exists) {
+			favouriteItemRepository.save(FavouriteItem.builder().userId(currentUser.getId()).product(product).build());
+		}
 
-        optionalFavouriteItem.ifPresent(favouriteItemRepository::delete);
+		log.info("addFavourite: execution completed");
+		return new ResponseEntityDto("Favourite item added successfully", true);
+	}
 
-        log.info("removeFavourite: execution completed");
-        return new ResponseEntityDto("Favourite item removed successfully", true);
-    }
+	@Override
+	public ResponseEntityDto removeFavourite(Long productId) {
+		log.info("removeFavourite: execution started");
 
-    @Override
-    public ResponseEntityDto getMyFavouteItems() {
-        log.info("getMyFavouteItems: execution started");
+		User currentUser = userService.getCurrentUser();
 
-        User currentUser = userService.getCurrentUser();
+		Optional<FavouriteItem> optionalFavouriteItem = favouriteItemRepository
+			.findByUserIdAndProductId(currentUser.getId(), productId);
 
-        List<FavouriteItem> favouriteItems = favouriteItemRepository.findByUserId(currentUser.getId());
+		optionalFavouriteItem.ifPresent(favouriteItemRepository::delete);
 
-        List<FavouriteItemResponseDto> favouriteItemResponseDtos = favouriteItems.stream().map(this::mapToFavouriteItemResponseDto).toList();
+		log.info("removeFavourite: execution completed");
+		return new ResponseEntityDto("Favourite item removed successfully", true);
+	}
 
-        log.info("getMyFavouteItems: execution completed");
-        return new ResponseEntityDto(true, favouriteItemResponseDtos);
-    }
+	@Override
+	public ResponseEntityDto getMyFavouteItems() {
+		log.info("getMyFavouteItems: execution started");
 
-    private FavouriteItemResponseDto mapToFavouriteItemResponseDto(FavouriteItem favouriteItem) {
-        return FavouriteItemResponseDto.builder()
-                .id(favouriteItem.getId())
-                .productNameResponseDtos(mapToProductNameResponseDtos(favouriteItem.getProduct().getNameTranslations()))
-                .heroImageSignedUrl(s3ImageHandler.getImageUrl(favouriteItem.getProduct().getHeroImage()))
-                .build();
-    }
+		User currentUser = userService.getCurrentUser();
 
-    private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
-        return productNames.stream().map(this::mapToProductNameResponseDto).toList();
-    }
+		List<FavouriteItem> favouriteItems = favouriteItemRepository.findByUserId(currentUser.getId());
 
-    private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
-        return ProductNameResponseDto.builder()
-                .language(productName.getLanguage())
-                .name(productName.getName())
-                .build();
-    }
+		List<FavouriteItemResponseDto> favouriteItemResponseDtos = favouriteItems.stream()
+			.map(this::mapToFavouriteItemResponseDto)
+			.toList();
+
+		log.info("getMyFavouteItems: execution completed");
+		return new ResponseEntityDto(true, favouriteItemResponseDtos);
+	}
+
+	private FavouriteItemResponseDto mapToFavouriteItemResponseDto(FavouriteItem favouriteItem) {
+		return FavouriteItemResponseDto.builder()
+			.id(favouriteItem.getId())
+			.productNameResponseDtos(mapToProductNameResponseDtos(favouriteItem.getProduct().getNameTranslations()))
+			.heroImageSignedUrl(s3ImageHandler.getImageUrl(favouriteItem.getProduct().getHeroImage()))
+			.build();
+	}
+
+	private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
+		return productNames.stream().map(this::mapToProductNameResponseDto).toList();
+	}
+
+	private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
+		return ProductNameResponseDto.builder().language(productName.getLanguage()).name(productName.getName()).build();
+	}
+
 }

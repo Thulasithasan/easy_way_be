@@ -24,112 +24,111 @@ import java.util.*;
 @RequiredArgsConstructor
 public class CardItemServiceImpl implements CardItemService {
 
-    private final StockRepository stockRepository;
-    private final S3ImageHandler s3ImageHandler;
-    private final UserService userService;
-    private final ProductRepository productRepository;
-    private final CardItemRepository cardItemRepository;
+	private final StockRepository stockRepository;
 
-    @Override
-    public ResponseEntityDto addToCard(Long productId) {
-        log.info("addToCard: execution started");
+	private final S3ImageHandler s3ImageHandler;
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+	private final UserService userService;
 
-        User user = userService.getCurrentUser();
+	private final ProductRepository productRepository;
 
-        CardItem cardItem = cardItemRepository.findByUserIdAndProductId(user.getId(), product.getId())
-                .orElse(CardItem.builder()
-                        .userId(user.getId())
-                        .product(product)
-                        .quantity(BigDecimal.ZERO)
-                        .build());
+	private final CardItemRepository cardItemRepository;
 
-        cardItem.setQuantity(cardItem.getQuantity().add(BigDecimal.ONE));
+	@Override
+	public ResponseEntityDto addToCard(Long productId) {
+		log.info("addToCard: execution started");
 
-        cardItemRepository.save(cardItem);
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-        log.info("addToCard: execution completed");
-        return new ResponseEntityDto("Added to card successfully", true);
-    }
+		User user = userService.getCurrentUser();
 
-    @Override
-    public ResponseEntityDto removeFromCart(Long productId) {
-        log.info("removeFromCart: execution started");
-        User user = userService.getCurrentUser();
+		CardItem cardItem = cardItemRepository.findByUserIdAndProductId(user.getId(), product.getId())
+			.orElse(CardItem.builder().userId(user.getId()).product(product).quantity(BigDecimal.ZERO).build());
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+		cardItem.setQuantity(cardItem.getQuantity().add(BigDecimal.ONE));
 
-        CardItem item = cardItemRepository.findByUserIdAndProductId(user.getId(), product.getId())
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_CARD_ITEM_NOT_FOUND));
+		cardItemRepository.save(cardItem);
 
-        if (item.getQuantity().compareTo(BigDecimal.ONE) > 0) {
-            item.setQuantity(item.getQuantity().subtract(BigDecimal.ONE));
-            cardItemRepository.save(item);
-        } else {
-            cardItemRepository.delete(item);
-        }
-        log.info("removeFromCart: execution completed");
-        return new ResponseEntityDto("Removed to card successfully", true);
-    }
+		log.info("addToCard: execution completed");
+		return new ResponseEntityDto("Added to card successfully", true);
+	}
 
+	@Override
+	public ResponseEntityDto removeFromCart(Long productId) {
+		log.info("removeFromCart: execution started");
+		User user = userService.getCurrentUser();
 
-    @Override
-    public ResponseEntityDto getMyCard() {
-        log.info("getMyCard: execution started");
-        User currentUser = userService.getCurrentUser();
-        List<CardItem> cardItems = cardItemRepository.findByUserId(currentUser.getId());
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-        BigDecimal totalAmount = BigDecimal.ZERO;
+		CardItem item = cardItemRepository.findByUserIdAndProductId(user.getId(), product.getId())
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_CARD_ITEM_NOT_FOUND));
 
-        List<CardItemResponseDto> cardItemResponseDtos = new ArrayList<>();
+		if (item.getQuantity().compareTo(BigDecimal.ONE) > 0) {
+			item.setQuantity(item.getQuantity().subtract(BigDecimal.ONE));
+			cardItemRepository.save(item);
+		}
+		else {
+			cardItemRepository.delete(item);
+		}
+		log.info("removeFromCart: execution completed");
+		return new ResponseEntityDto("Removed to card successfully", true);
+	}
 
-        for (CardItem cardItem : cardItems) {
-            Product product = cardItem.getProduct();
+	@Override
+	public ResponseEntityDto getMyCard() {
+		log.info("getMyCard: execution started");
+		User currentUser = userService.getCurrentUser();
+		List<CardItem> cardItems = cardItemRepository.findByUserId(currentUser.getId());
 
-            Stock stock = stockRepository.findByProductId(product.getId())
-                    .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
+		BigDecimal totalAmount = BigDecimal.ZERO;
 
-            BigDecimal price = getDefaultSellingPrice(stock);
-            BigDecimal itemTotal = price.multiply(cardItem.getQuantity());
+		List<CardItemResponseDto> cardItemResponseDtos = new ArrayList<>();
 
-            totalAmount = totalAmount.add(itemTotal);
+		for (CardItem cardItem : cardItems) {
+			Product product = cardItem.getProduct();
 
-            cardItemResponseDtos.add(CardItemResponseDto.builder()
-                    .nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
-                    .heroImageSignedUrl(s3ImageHandler.getImageUrl(product.getHeroImage()))
-                    .measurementPrice(price)
-                    .quantity(cardItem.getQuantity())
-                    .build());
-        }
+			Stock stock = stockRepository.findByProductId(product.getId())
+				.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
 
-        CardResponseDto cardResponseDto = CardResponseDto.builder()
-                .cardItemResponseDtos(cardItemResponseDtos)
-                .totalAmount(totalAmount)
-                .build();
+			BigDecimal price = getDefaultSellingPrice(stock);
+			BigDecimal itemTotal = price.multiply(cardItem.getQuantity());
 
-        log.info("getMyCard: execution completed");
-        return new ResponseEntityDto(true, cardResponseDto);
-    }
+			totalAmount = totalAmount.add(itemTotal);
 
-    private BigDecimal getDefaultSellingPrice(Stock stock) {
-        return stock.getPrices().stream()
-                .filter(Price::getIsDefault)
-                .map(Price::getFinalPrice)
-                .findFirst()
-                .orElse(BigDecimal.ZERO);
-    }
+			cardItemResponseDtos.add(CardItemResponseDto.builder()
+				.nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
+				.heroImageSignedUrl(s3ImageHandler.getImageUrl(product.getHeroImage()))
+				.measurementPrice(price)
+				.quantity(cardItem.getQuantity())
+				.build());
+		}
 
-    private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
-        return productNames.stream().map(this::mapToProductNameResponseDto).toList();
-    }
+		CardResponseDto cardResponseDto = CardResponseDto.builder()
+			.cardItemResponseDtos(cardItemResponseDtos)
+			.totalAmount(totalAmount)
+			.build();
 
-    private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
-        return ProductNameResponseDto.builder()
-                .language(productName.getLanguage())
-                .name(productName.getName())
-                .build();
-    }
+		log.info("getMyCard: execution completed");
+		return new ResponseEntityDto(true, cardResponseDto);
+	}
+
+	private BigDecimal getDefaultSellingPrice(Stock stock) {
+		return stock.getPrices()
+			.stream()
+			.filter(Price::getIsDefault)
+			.map(Price::getFinalPrice)
+			.findFirst()
+			.orElse(BigDecimal.ZERO);
+	}
+
+	private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
+		return productNames.stream().map(this::mapToProductNameResponseDto).toList();
+	}
+
+	private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
+		return ProductNameResponseDto.builder().language(productName.getLanguage()).name(productName.getName()).build();
+	}
+
 }

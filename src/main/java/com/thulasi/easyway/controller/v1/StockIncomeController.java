@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class StockIncomeController {
 
-    private final StockIncomeService stockIncomeService;
+	private final StockIncomeService stockIncomeService;
 
-    @Operation(summary = "Create stock income", description = "Create a new stock income")
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> createStockIncome(@Valid @RequestBody StockIncomeRequestDto dto) {
-        ResponseEntityDto response = stockIncomeService.createStockIncome(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Create stock income", description = "Create a new stock income")
+	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> createStockIncome(@Valid @RequestBody StockIncomeRequestDto dto) {
+		ResponseEntityDto response = stockIncomeService.createStockIncome(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }

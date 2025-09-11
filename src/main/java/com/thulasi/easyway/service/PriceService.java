@@ -5,5 +5,6 @@ import com.thulasi.easyway.payload.response.ResponseEntityDto;
 
 public interface PriceService {
 
-    ResponseEntityDto createProductPrice(PriceRequestDto dto);
+	ResponseEntityDto createProductPrice(PriceRequestDto dto);
+
 }

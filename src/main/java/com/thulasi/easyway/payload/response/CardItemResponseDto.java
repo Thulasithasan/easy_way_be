@@ -10,9 +10,15 @@ import java.util.Map;
 @Data
 @Builder
 public class CardItemResponseDto {
-    private Long cardItemId;
-    private List<ProductNameResponseDto> nameTranslations;
-    private String heroImageSignedUrl;
-    private BigDecimal measurementPrice;
-    private BigDecimal quantity;
+
+	private Long cardItemId;
+
+	private List<ProductNameResponseDto> nameTranslations;
+
+	private String heroImageSignedUrl;
+
+	private BigDecimal measurementPrice;
+
+	private BigDecimal quantity;
+
 }

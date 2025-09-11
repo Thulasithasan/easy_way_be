@@ -13,19 +13,11 @@ import com.thulasi.easyway.model.Product;
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-	@Query("SELECT DISTINCT p FROM Product p " +
-			"JOIN p.nameTranslations pn " +
-			"JOIN p.subCategory sc " +
-			"JOIN sc.category c " +
-			"WHERE ( " +
-			"    LOWER(pn.name) LIKE LOWER(CONCAT('%', :productName, '%'))" +
-			"    OR :productName IS NULL )" +
-			"AND (:subCategoryId IS NULL OR sc.id = :subCategoryId) " +
-			"AND (:categoryId IS NULL OR c.id = :categoryId)")
-	Page<Product> filterProducts(
-			@Param("productName") String productName,
-			@Param("subCategoryId") Long subCategoryId,
-			@Param("categoryId") Long categoryId,
-			Pageable pageable);
+	@Query("SELECT DISTINCT p FROM Product p " + "JOIN p.nameTranslations pn " + "JOIN p.subCategory sc "
+			+ "JOIN sc.category c " + "WHERE ( " + "    LOWER(pn.name) LIKE LOWER(CONCAT('%', :productName, '%'))"
+			+ "    OR :productName IS NULL )" + "AND (:subCategoryId IS NULL OR sc.id = :subCategoryId) "
+			+ "AND (:categoryId IS NULL OR c.id = :categoryId)")
+	Page<Product> filterProducts(@Param("productName") String productName, @Param("subCategoryId") Long subCategoryId,
+			@Param("categoryId") Long categoryId, Pageable pageable);
 
 }

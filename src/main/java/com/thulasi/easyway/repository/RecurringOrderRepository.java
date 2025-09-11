@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface RecurringOrderRepository extends JpaRepository<RecurringOrder, Long> {
 
-    List<RecurringOrder> findByUserId(Long userId);
+	List<RecurringOrder> findByUserId(Long userId);
+
 }

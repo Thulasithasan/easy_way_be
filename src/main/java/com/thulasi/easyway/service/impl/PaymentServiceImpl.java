@@ -23,30 +23,33 @@ import com.thulasi.easyway.service.PaymentService;
 @Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
-    private PaymentRepository paymentRepository;
-    private SalesOrderRepository salesOrderRepository;
-    private InvoiceRepository invoiceRepository;
+	private PaymentRepository paymentRepository;
 
-    @Override
-    public ResponseEntityDto createPayment(PaymentRequestDto dto) {
-        log.info("createProductPrice: execution started");
+	private SalesOrderRepository salesOrderRepository;
 
-        Invoice invoice = invoiceRepository.findById(dto.getInvoiceId())
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_INVOICE_NOT_FOUND));
+	private InvoiceRepository invoiceRepository;
 
-        Payment payment = Payment.builder()
-                .invoice(invoice)
-                .paymentAmount(dto.getAmount())
-                .paymentMethod(dto.getPaymentMethod())
-                .paymentStatus(PaymentStatus.COMPLETED)
-                .build();
+	@Override
+	public ResponseEntityDto createPayment(PaymentRequestDto dto) {
+		log.info("createProductPrice: execution started");
 
-        paymentRepository.save(payment);
+		Invoice invoice = invoiceRepository.findById(dto.getInvoiceId())
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_INVOICE_NOT_FOUND));
 
-        SalesOrder salesOrder = invoice.getSalesOrder();
-        salesOrder.setStatus(SalesOrderStatus.PAYMENT_COMPLETED);
+		Payment payment = Payment.builder()
+			.invoice(invoice)
+			.paymentAmount(dto.getAmount())
+			.paymentMethod(dto.getPaymentMethod())
+			.paymentStatus(PaymentStatus.COMPLETED)
+			.build();
 
-        log.info("createProductPrice: execution completed");
-        return new ResponseEntityDto("Payment created successfully", true);
-    }
+		paymentRepository.save(payment);
+
+		SalesOrder salesOrder = invoice.getSalesOrder();
+		salesOrder.setStatus(SalesOrderStatus.PAYMENT_COMPLETED);
+
+		log.info("createProductPrice: execution completed");
+		return new ResponseEntityDto("Payment created successfully", true);
+	}
+
 }

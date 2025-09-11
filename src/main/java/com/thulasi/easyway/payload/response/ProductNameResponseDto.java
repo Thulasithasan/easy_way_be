@@ -6,6 +6,9 @@ import lombok.Data;
 @Data
 @Builder
 public class ProductNameResponseDto {
-    private String language;
-    private String name;
+
+	private String language;
+
+	private String name;
+
 }

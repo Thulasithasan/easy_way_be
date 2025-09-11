@@ -9,10 +9,12 @@ import java.math.BigDecimal;
 
 @Data
 public class RecurringOrderRequestDto {
-    @NotBlank(message = "Name is required")
-    @Schema(description = "Recurring order name", example = "monthly")
-    private String name;
 
-    @Schema(description = "Note for the recurring order", example = "Recurring order on the 10th of every month")
-    private String note;
+	@NotBlank(message = "Name is required")
+	@Schema(description = "Recurring order name", example = "monthly")
+	private String name;
+
+	@Schema(description = "Note for the recurring order", example = "Recurring order on the 10th of every month")
+	private String note;
+
 }

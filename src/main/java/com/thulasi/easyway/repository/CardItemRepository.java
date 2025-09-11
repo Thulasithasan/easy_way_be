@@ -10,11 +10,10 @@ import java.util.Optional;
 @Repository
 public interface CardItemRepository extends JpaRepository<CardItem, Long> {
 
-    Optional<CardItem> findByUserIdAndProductId(Long userId, Long productId);
+	Optional<CardItem> findByUserIdAndProductId(Long userId, Long productId);
 
-    List<CardItem> findByUserId(Long userId);
+	List<CardItem> findByUserId(Long userId);
 
-    List<CardItem> findByIdInAndUserId(List<Long> ids, Long userId);
-
+	List<CardItem> findByIdInAndUserId(List<Long> ids, Long userId);
 
 }

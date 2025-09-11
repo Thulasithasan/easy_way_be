@@ -21,32 +21,32 @@ import lombok.Setter;
 @Table(name = "purchase_bills")
 public class PurchaseBill extends Auditable<String> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, updatable = false)
+	private Long id;
 
-    // The anchor/supplier company that issued the bill
-    @Column(name = "supplier_name", nullable = false)
-    private String supplierName;
+	// The anchor/supplier company that issued the bill
+	@Column(name = "supplier_name", nullable = false)
+	private String supplierName;
 
-    @Column(name = "bill_number", nullable = false, unique = true)
-    private String billNumber;
+	@Column(name = "bill_number", nullable = false, unique = true)
+	private String billNumber;
 
-    @Column(name = "bill_date", nullable = false)
-    private LocalDate billDate;
+	@Column(name = "bill_date", nullable = false)
+	private LocalDate billDate;
 
-    @Column(name = "total_amount", nullable = false)
-    private BigDecimal totalAmount;
+	@Column(name = "total_amount", nullable = false)
+	private BigDecimal totalAmount;
 
-    @Column(name = "bill_image_url")
-    private String billImageUrl;
+	@Column(name = "bill_image_url")
+	private String billImageUrl;
 
-    @OneToMany(mappedBy = "purchaseBill", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<StockIncome> stockIncomes = new ArrayList<>();
+	@OneToMany(mappedBy = "purchaseBill", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<StockIncome> stockIncomes = new ArrayList<>();
 
-    @Column(name = "note")
-    private String note;
+	@Column(name = "note")
+	private String note;
+
 }
-

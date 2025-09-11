@@ -1,0 +1,54 @@
+# -----------------------
+# Java & Maven
+# -----------------------
+/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle
+.gradle/
+build/
+
+# -----------------------
+# IDE / Editor
+# -----------------------
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+
+# VS Code
+.vscode/
+
+# -----------------------
+# OS Files
+# -----------------------
+.DS_Store
+Thumbs.db
+
+# -----------------------
+# Logs
+# -----------------------
+*.log
+
+# -----------------------
+# Environment / Secrets
+# -----------------------
+/src/main/resources/environment/env.json
+*.env

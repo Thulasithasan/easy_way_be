@@ -13,18 +13,20 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Table(name = "card_items")
 public class CardItem extends Auditable<String> {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "product_id", nullable = false)
-    private Product product;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, updatable = false)
+	private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "product_id", nullable = false)
+	private Product product;
 
-    @Column(name = "quantity", nullable = false)
-    private BigDecimal quantity = BigDecimal.ONE;
+	@Column(name = "user_id", nullable = false)
+	private Long userId;
+
+	@Column(name = "quantity", nullable = false)
+	private BigDecimal quantity = BigDecimal.ONE;
+
 }

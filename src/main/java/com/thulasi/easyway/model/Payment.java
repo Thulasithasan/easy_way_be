@@ -51,4 +51,5 @@ public class Payment extends Auditable<String> {
 			this.paymentRefNo = IdGenerator.generateId("PAY");
 		}
 	}
+
 }

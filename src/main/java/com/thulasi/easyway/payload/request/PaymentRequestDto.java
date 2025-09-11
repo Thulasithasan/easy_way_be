@@ -7,7 +7,11 @@ import java.math.BigDecimal;
 
 @Data
 public class PaymentRequestDto {
-    private Long invoiceId;
-    private PaymentMethod paymentMethod;
-    private BigDecimal amount;
+
+	private Long invoiceId;
+
+	private PaymentMethod paymentMethod;
+
+	private BigDecimal amount;
+
 }

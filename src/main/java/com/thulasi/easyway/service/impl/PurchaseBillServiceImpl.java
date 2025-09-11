@@ -20,57 +20,59 @@ import java.util.Map;
 @Slf4j
 public class PurchaseBillServiceImpl implements PurchaseBillService {
 
-    private final PurchaseBillRepository purchaseBillRepository;
-    private final S3ImageHandler s3ImageHandler;
+	private final PurchaseBillRepository purchaseBillRepository;
 
-    @Override
-    public ResponseEntityDto createPurchaseBill(PurchaseBillRequestDto dto) {
-        log.info("createPurchaseBill: execution started");
-        PurchaseBill bill = PurchaseBill.builder()
-                .supplierName(dto.getSupplierName())
-                .billNumber(dto.getBillNumber())
-                .billDate(dto.getBillDate())
-                .totalAmount(dto.getTotalAmount())
-                .note(dto.getNote())
-                .build();
+	private final S3ImageHandler s3ImageHandler;
 
-        // Save all in one transaction
-        purchaseBillRepository.save(bill);
-        log.info("createPurchaseBill: execution completed");
-        return new ResponseEntityDto("Purchase bill created successfully", true);
-    }
+	@Override
+	public ResponseEntityDto createPurchaseBill(PurchaseBillRequestDto dto) {
+		log.info("createPurchaseBill: execution started");
+		PurchaseBill bill = PurchaseBill.builder()
+			.supplierName(dto.getSupplierName())
+			.billNumber(dto.getBillNumber())
+			.billDate(dto.getBillDate())
+			.totalAmount(dto.getTotalAmount())
+			.note(dto.getNote())
+			.build();
 
-    @Override
-    public ResponseEntityDto uploadPurchaseBillImage(Long purchaseBillId, MultipartFile file) {
-        log.info("purchaseBillImageUpload: execution started");
+		// Save all in one transaction
+		purchaseBillRepository.save(bill);
+		log.info("createPurchaseBill: execution completed");
+		return new ResponseEntityDto("Purchase bill created successfully", true);
+	}
 
-        PurchaseBill purchaseBill = purchaseBillRepository.findById(purchaseBillId)
-                .orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PURCHASE_BILL_NOT_FOUND));
+	@Override
+	public ResponseEntityDto uploadPurchaseBillImage(Long purchaseBillId, MultipartFile file) {
+		log.info("purchaseBillImageUpload: execution started");
 
-        Map<String, String> uploadedImage = s3ImageHandler.uploadImage("purchaseBills/", file);
+		PurchaseBill purchaseBill = purchaseBillRepository.findById(purchaseBillId)
+			.orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PURCHASE_BILL_NOT_FOUND));
 
-        String imageKeyUrl = uploadedImage.get("key") + uploadedImage.get("url");
+		Map<String, String> uploadedImage = s3ImageHandler.uploadImage("purchaseBills/", file);
 
-        purchaseBill.setBillImageUrl(imageKeyUrl);
+		String imageKeyUrl = uploadedImage.get("key") + uploadedImage.get("url");
 
-        purchaseBillRepository.save(purchaseBill);
+		purchaseBill.setBillImageUrl(imageKeyUrl);
 
-        log.info("purchaseBillImageUpload: execution completed");
-        return new ResponseEntityDto(true, uploadedImage);
-    }
+		purchaseBillRepository.save(purchaseBill);
 
-    @Override
-    public ResponseEntityDto deletePurchaseBillImage(Long purchaseBillId, String key) {
-        log.info("purchaseBillImageDelete: execution started");
+		log.info("purchaseBillImageUpload: execution completed");
+		return new ResponseEntityDto(true, uploadedImage);
+	}
 
-        PurchaseBill purchaseBill = purchaseBillRepository.findById(purchaseBillId)
-                .orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PURCHASE_BILL_NOT_FOUND));
+	@Override
+	public ResponseEntityDto deletePurchaseBillImage(Long purchaseBillId, String key) {
+		log.info("purchaseBillImageDelete: execution started");
 
-        s3ImageHandler.deleteImage(key);
+		PurchaseBill purchaseBill = purchaseBillRepository.findById(purchaseBillId)
+			.orElseThrow(() -> new EntityNotFoundException(CommonMessageConstant.COMMON_ERROR_PURCHASE_BILL_NOT_FOUND));
 
-        purchaseBillRepository.save(purchaseBill);
+		s3ImageHandler.deleteImage(key);
 
-        log.info("purchaseBillImageDelete: execution completed");
-        return new ResponseEntityDto("Product image deleted successfully", true);
-    }
+		purchaseBillRepository.save(purchaseBill);
+
+		log.info("purchaseBillImageDelete: execution completed");
+		return new ResponseEntityDto("Product image deleted successfully", true);
+	}
+
 }

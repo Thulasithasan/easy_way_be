@@ -60,4 +60,5 @@ public class Stock extends Auditable<String> {
 	@Builder.Default
 	@Column(name = "is_active", nullable = false)
 	private Boolean isActive = true;
+
 }

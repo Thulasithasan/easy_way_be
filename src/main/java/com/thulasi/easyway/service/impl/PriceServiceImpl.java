@@ -19,52 +19,56 @@ import java.math.RoundingMode;
 @Slf4j
 public class PriceServiceImpl implements PriceService {
 
-    private final StockRepository stockRepository;
-    private final ProductRepository productRepository;
-    private final PriceRepository priceRepository;
+	private final StockRepository stockRepository;
 
-    @Override
-    public ResponseEntityDto createProductPrice(PriceRequestDto dto) {
-        log.info("createProductPrice: execution started");
+	private final ProductRepository productRepository;
 
-        Product product = productRepository.findById(dto.getProductId())
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+	private final PriceRepository priceRepository;
 
-        Stock stock = stockRepository.findByProductId(product.getId())
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
+	@Override
+	public ResponseEntityDto createProductPrice(PriceRequestDto dto) {
+		log.info("createProductPrice: execution started");
 
-        BigDecimal finalPrice = dto.getActualPrice();
+		Product product = productRepository.findById(dto.getProductId())
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-        if (dto.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0) {
-            finalPrice = finalPrice.subtract(dto.getDiscountAmount());
-        } else if (dto.getDiscountPercent().compareTo(BigDecimal.ZERO) > 0) {
-            finalPrice = finalPrice.subtract(
-                    dto.getActualPrice().multiply(dto.getDiscountPercent())
-                            .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
-        }
+		Stock stock = stockRepository.findByProductId(product.getId())
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
 
-        Price price = Price.builder()
-                .stock(stock)
-                .quantity(dto.getQuantity())
-                .unit(dto.getUnit())
-                .actualPrice(dto.getActualPrice())
-                .discountAmount(dto.getDiscountAmount())
-                .discountPercent(dto.getDiscountPercent())
-                .finalPrice(finalPrice)
-                .isDefault(dto.getIsDefault())
-                .build();
+		BigDecimal finalPrice = dto.getActualPrice();
 
-        priceRepository.save(price);
-        log.info("createProductPrice: execution completed");
+		if (dto.getDiscountAmount().compareTo(BigDecimal.ZERO) > 0) {
+			finalPrice = finalPrice.subtract(dto.getDiscountAmount());
+		}
+		else if (dto.getDiscountPercent().compareTo(BigDecimal.ZERO) > 0) {
+			finalPrice = finalPrice.subtract(dto.getActualPrice()
+				.multiply(dto.getDiscountPercent())
+				.divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+		}
 
-        return new ResponseEntityDto("Product price created successfully", true);
-    }
+		Price price = Price.builder()
+			.stock(stock)
+			.quantity(dto.getQuantity())
+			.unit(dto.getUnit())
+			.actualPrice(dto.getActualPrice())
+			.discountAmount(dto.getDiscountAmount())
+			.discountPercent(dto.getDiscountPercent())
+			.finalPrice(finalPrice)
+			.isDefault(dto.getIsDefault())
+			.build();
 
-//    @Override
-//    public ResponseEntityDto findByProductId(Long productId) {
-//        log.info("findByProductId: execution started");
-//
-//        log.info("findByProductId: execution completed");
-//        return new ResponseEntityDto("Product price created successfully", true);
-//    }
+		priceRepository.save(price);
+		log.info("createProductPrice: execution completed");
+
+		return new ResponseEntityDto("Product price created successfully", true);
+	}
+
+	// @Override
+	// public ResponseEntityDto findByProductId(Long productId) {
+	// log.info("findByProductId: execution started");
+	//
+	// log.info("findByProductId: execution completed");
+	// return new ResponseEntityDto("Product price created successfully", true);
+	// }
+
 }

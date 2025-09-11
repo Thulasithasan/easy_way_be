@@ -18,12 +18,13 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PriceContoller {
 
-    private final PriceService priceService;
+	private final PriceService priceService;
 
-    @Operation(summary = "Create product price", description = "Create a new product price")
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> createProductPrice(@Valid @RequestBody PriceRequestDto dto) {
-        ResponseEntityDto response = priceService.createProductPrice(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Create product price", description = "Create a new product price")
+	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> createProductPrice(@Valid @RequestBody PriceRequestDto dto) {
+		ResponseEntityDto response = priceService.createProductPrice(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }

@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface RecurringOrderItemRepository extends JpaRepository<RecurringOrderItem, Long> {
 
-    Optional<RecurringOrderItem> findByProductIdAndRecurringOrderId(Long productId, Long recurringOrderId);
+	Optional<RecurringOrderItem> findByProductIdAndRecurringOrderId(Long productId, Long recurringOrderId);
+
 }

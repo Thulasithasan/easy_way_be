@@ -22,134 +22,136 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecurringOrderItemServiceImpl implements RecurringOrderItemService {
 
-    private final StockRepository stockRepository;
-    private final S3ImageHandler s3ImageHandler;
-    private final UserService userService;
-    private final ProductRepository productRepository;
-    private final RecurringOrderRepository recurringOrderRepository;
-    private final RecurringOrderItemRepository recurringOrderItemRepository;
+	private final StockRepository stockRepository;
 
-    @Override
-    public ResponseEntityDto createRecurringOrder(RecurringOrderRequestDto dto) {
-        log.info("createRecurringOrder: execution started");
-        User currentUser = userService.getCurrentUser();
+	private final S3ImageHandler s3ImageHandler;
 
-        recurringOrderRepository.save(RecurringOrder.builder()
-                .userId(currentUser.getId())
-                .name(dto.getName())
-                .note(dto.getNote())
-                .build());
+	private final UserService userService;
 
-        log.info("createRecurringOrder: execution completed");
-        return new ResponseEntityDto("Added to card successfully", true);
-    }
+	private final ProductRepository productRepository;
 
-    @Override
-    public ResponseEntityDto addToRecurringOrderItem(Long recurringOrderId, Long productId) {
-        log.info("addToRecurringOrderItem: execution started");
+	private final RecurringOrderRepository recurringOrderRepository;
 
-        RecurringOrder recurringOrder = recurringOrderRepository.findById(recurringOrderId).orElseThrow(() ->
-                new ModuleException(CommonMessageConstant.COMMON_ERROR_RECURRING_ORDER_NOT_FOUND));
+	private final RecurringOrderItemRepository recurringOrderItemRepository;
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+	@Override
+	public ResponseEntityDto createRecurringOrder(RecurringOrderRequestDto dto) {
+		log.info("createRecurringOrder: execution started");
+		User currentUser = userService.getCurrentUser();
 
-        RecurringOrderItem recurringOrderItem = recurringOrderItemRepository
-                .findByProductIdAndRecurringOrderId(product.getId(), recurringOrderId).orElse(RecurringOrderItem.builder()
-                        .recurringOrder(recurringOrder)
-                        .product(product)
-                        .quantity(BigDecimal.ONE)
-                        .build());
+		recurringOrderRepository
+			.save(RecurringOrder.builder().userId(currentUser.getId()).name(dto.getName()).note(dto.getNote()).build());
 
-        recurringOrderItem.setQuantity(recurringOrderItem.getQuantity().add(BigDecimal.ONE));
+		log.info("createRecurringOrder: execution completed");
+		return new ResponseEntityDto("Added to card successfully", true);
+	}
 
-        recurringOrderItemRepository.save(recurringOrderItem);
+	@Override
+	public ResponseEntityDto addToRecurringOrderItem(Long recurringOrderId, Long productId) {
+		log.info("addToRecurringOrderItem: execution started");
 
-        log.info("addToRecurringOrderItem: execution completed");
-        return new ResponseEntityDto("Added to recurring order item successfully", true);
-    }
+		RecurringOrder recurringOrder = recurringOrderRepository.findById(recurringOrderId)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_RECURRING_ORDER_NOT_FOUND));
 
-    @Override
-    public ResponseEntityDto removeFromRecurringOrderItem(Long recurringOrderId, Long productId) {
-        log.info("removeFromRecurringOrderItem: execution started");
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
+		RecurringOrderItem recurringOrderItem = recurringOrderItemRepository
+			.findByProductIdAndRecurringOrderId(product.getId(), recurringOrderId)
+			.orElse(RecurringOrderItem.builder()
+				.recurringOrder(recurringOrder)
+				.product(product)
+				.quantity(BigDecimal.ONE)
+				.build());
 
-        RecurringOrderItem recurringOrderItem = recurringOrderItemRepository
-                .findByProductIdAndRecurringOrderId(product.getId(), recurringOrderId)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_RECURRING_ORDER_ITEM_NOT_FOUND));
+		recurringOrderItem.setQuantity(recurringOrderItem.getQuantity().add(BigDecimal.ONE));
 
-        if (recurringOrderItem.getQuantity().compareTo(BigDecimal.ONE) > 0) {
-            recurringOrderItem.setQuantity(recurringOrderItem.getQuantity().subtract(BigDecimal.ONE));
-            recurringOrderItemRepository.save(recurringOrderItem);
-        } else {
-            recurringOrderItemRepository.delete(recurringOrderItem);
-        }
-        log.info("removeFromRecurringOrderItem: execution completed");
-        return new ResponseEntityDto("Removed to recurring order item successfully", true);
-    }
+		recurringOrderItemRepository.save(recurringOrderItem);
 
+		log.info("addToRecurringOrderItem: execution completed");
+		return new ResponseEntityDto("Added to recurring order item successfully", true);
+	}
 
-    @Override
-    public ResponseEntityDto getMyRecurringOrder() {
-        log.info("getMyRecurringOrder: execution started");
-        User currentUser = userService.getCurrentUser();
-        List<RecurringOrder> recurringOrders = recurringOrderRepository.findByUserId(currentUser.getId());
+	@Override
+	public ResponseEntityDto removeFromRecurringOrderItem(Long recurringOrderId, Long productId) {
+		log.info("removeFromRecurringOrderItem: execution started");
 
-        List<RecurringOrderResponseDto> recurringOrderResponseDtos = new ArrayList<>();
-        for (RecurringOrder recurringOrder : recurringOrders) {
-            RecurringOrderResponseDto recurringOrderResponseDto = RecurringOrderResponseDto.builder()
-                    .name(recurringOrder.getName())
-                    .note(recurringOrder.getNote())
-                    .build();
+		Product product = productRepository.findById(productId)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_PRODUCT_NOT_FOUND));
 
-            List<RecurringOrderItem> items = recurringOrder.getItems();
+		RecurringOrderItem recurringOrderItem = recurringOrderItemRepository
+			.findByProductIdAndRecurringOrderId(product.getId(), recurringOrderId)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_RECURRING_ORDER_ITEM_NOT_FOUND));
 
-            BigDecimal totalAmount = BigDecimal.ZERO;
-            List<RecurringOrderItemResponseDto> responseDtos = new ArrayList<>();
-            for (RecurringOrderItem item : items) {
-                Product product = item.getProduct();
+		if (recurringOrderItem.getQuantity().compareTo(BigDecimal.ONE) > 0) {
+			recurringOrderItem.setQuantity(recurringOrderItem.getQuantity().subtract(BigDecimal.ONE));
+			recurringOrderItemRepository.save(recurringOrderItem);
+		}
+		else {
+			recurringOrderItemRepository.delete(recurringOrderItem);
+		}
+		log.info("removeFromRecurringOrderItem: execution completed");
+		return new ResponseEntityDto("Removed to recurring order item successfully", true);
+	}
 
-                Stock stock = stockRepository.findByProductId(product.getId())
-                        .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
+	@Override
+	public ResponseEntityDto getMyRecurringOrder() {
+		log.info("getMyRecurringOrder: execution started");
+		User currentUser = userService.getCurrentUser();
+		List<RecurringOrder> recurringOrders = recurringOrderRepository.findByUserId(currentUser.getId());
 
-                BigDecimal price = getDefaultSellingPrice(stock);
-                BigDecimal itemTotal = price.multiply(item.getQuantity());
+		List<RecurringOrderResponseDto> recurringOrderResponseDtos = new ArrayList<>();
+		for (RecurringOrder recurringOrder : recurringOrders) {
+			RecurringOrderResponseDto recurringOrderResponseDto = RecurringOrderResponseDto.builder()
+				.name(recurringOrder.getName())
+				.note(recurringOrder.getNote())
+				.build();
 
-                totalAmount = totalAmount.add(itemTotal);
-                responseDtos.add(RecurringOrderItemResponseDto.builder()
-                        .nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
-                        .heroImageSignedUrl(s3ImageHandler.getImageUrl(product.getHeroImage()))
-                        .measurementPrice(price)
-                        .quantity(item.getQuantity())
-                        .build());
-            }
+			List<RecurringOrderItem> items = recurringOrder.getItems();
 
-            recurringOrderResponseDto.setRecurringOrderItemResponseDtos(responseDtos);
-            recurringOrderResponseDtos.add(recurringOrderResponseDto);
-        }
+			BigDecimal totalAmount = BigDecimal.ZERO;
+			List<RecurringOrderItemResponseDto> responseDtos = new ArrayList<>();
+			for (RecurringOrderItem item : items) {
+				Product product = item.getProduct();
 
-        log.info("getMyRecurringOrder: execution completed");
-        return new ResponseEntityDto(true, recurringOrderResponseDtos);
-    }
+				Stock stock = stockRepository.findByProductId(product.getId())
+					.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_STOCK_NOT_FOUND));
 
-    private BigDecimal getDefaultSellingPrice(Stock stock) {
-        return stock.getPrices().stream()
-                .filter(Price::getIsDefault)
-                .map(Price::getFinalPrice)
-                .findFirst()
-                .orElse(BigDecimal.ZERO);
-    }
+				BigDecimal price = getDefaultSellingPrice(stock);
+				BigDecimal itemTotal = price.multiply(item.getQuantity());
 
-    private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
-        return productNames.stream().map(this::mapToProductNameResponseDto).toList();
-    }
+				totalAmount = totalAmount.add(itemTotal);
+				responseDtos.add(RecurringOrderItemResponseDto.builder()
+					.nameTranslations(mapToProductNameResponseDtos(product.getNameTranslations()))
+					.heroImageSignedUrl(s3ImageHandler.getImageUrl(product.getHeroImage()))
+					.measurementPrice(price)
+					.quantity(item.getQuantity())
+					.build());
+			}
 
-    private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
-        return ProductNameResponseDto.builder()
-                .language(productName.getLanguage())
-                .name(productName.getName())
-                .build();
-    }
+			recurringOrderResponseDto.setRecurringOrderItemResponseDtos(responseDtos);
+			recurringOrderResponseDtos.add(recurringOrderResponseDto);
+		}
+
+		log.info("getMyRecurringOrder: execution completed");
+		return new ResponseEntityDto(true, recurringOrderResponseDtos);
+	}
+
+	private BigDecimal getDefaultSellingPrice(Stock stock) {
+		return stock.getPrices()
+			.stream()
+			.filter(Price::getIsDefault)
+			.map(Price::getFinalPrice)
+			.findFirst()
+			.orElse(BigDecimal.ZERO);
+	}
+
+	private List<ProductNameResponseDto> mapToProductNameResponseDtos(List<ProductName> productNames) {
+		return productNames.stream().map(this::mapToProductNameResponseDto).toList();
+	}
+
+	private ProductNameResponseDto mapToProductNameResponseDto(ProductName productName) {
+		return ProductNameResponseDto.builder().language(productName.getLanguage()).name(productName.getName()).build();
+	}
+
 }

@@ -21,41 +21,44 @@ import software.amazon.awssdk.services.route53.endpoints.internal.Value;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductService productService;
+	private final ProductService productService;
 
-    @Operation(summary = "Create product", description = "Create a new product")
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> createProduct(@Valid @RequestBody ProductRequestDto dto) {
-        ResponseEntityDto response = productService.createProduct(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Create product", description = "Create a new product")
+	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> createProduct(@Valid @RequestBody ProductRequestDto dto) {
+		ResponseEntityDto response = productService.createProduct(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Get product by id", description = "Get product by id")
-    @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> getProductById(@PathVariable Long id) {
-        ResponseEntityDto response = productService.getProductById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Get product by id", description = "Get product by id")
+	@GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> getProductById(@PathVariable Long id) {
+		ResponseEntityDto response = productService.getProductById(id);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Filter products", description = "Filter products")
-    @GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> filterProducts(@Valid ProductFilterRequestDto dto) {
-        ResponseEntityDto response = productService.filterProducts(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Filter products", description = "Filter products")
+	@GetMapping(value = "/filter", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> filterProducts(@Valid ProductFilterRequestDto dto) {
+		ResponseEntityDto response = productService.filterProducts(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Upload product image", description = "Upload an image for a specific product")
-    @PutMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> uploadProductImage(@PathVariable Long id, @RequestParam Boolean isHeroImage, @RequestParam MultipartFile image) {
-        ResponseEntityDto response = productService.uploadProductImage(id, isHeroImage, image);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Upload product image", description = "Upload an image for a specific product")
+	@PutMapping(value = "/{id}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> uploadProductImage(@PathVariable Long id,
+			@RequestParam Boolean isHeroImage, @RequestParam MultipartFile image) {
+		ResponseEntityDto response = productService.uploadProductImage(id, isHeroImage, image);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Delete product image", description = "Delete an image from a specific product")
-    @DeleteMapping(value = "/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> deleteProductImage(@PathVariable Long id, @RequestParam Boolean isHeroImage, @RequestParam String key) {
-        ResponseEntityDto response = productService.deleteProductImage(id, isHeroImage, key);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Delete product image", description = "Delete an image from a specific product")
+	@DeleteMapping(value = "/{id}/images", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> deleteProductImage(@PathVariable Long id,
+			@RequestParam Boolean isHeroImage, @RequestParam String key) {
+		ResponseEntityDto response = productService.deleteProductImage(id, isHeroImage, key);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
 }
