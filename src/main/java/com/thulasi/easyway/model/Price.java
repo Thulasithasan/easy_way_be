@@ -55,4 +55,5 @@ public class Price extends Auditable<String> {
 	@Builder.Default
 	@Column(name = "is_default", nullable = false)
 	private Boolean isDefault = false;
+
 }

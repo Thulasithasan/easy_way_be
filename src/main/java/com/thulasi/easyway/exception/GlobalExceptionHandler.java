@@ -238,9 +238,7 @@ public class GlobalExceptionHandler {
 		logDetailedException(e, e.getMessageKey().name(), e.getMessage(), status);
 
 		return new ResponseEntity<>(
-				new ResponseEntityDto(true,
-						new ErrorResponse(status, e.getMessage(), e.getMessageKey())),
-				status);
+				new ResponseEntityDto(true, new ErrorResponse(status, e.getMessage(), e.getMessageKey())), status);
 	}
 
 	private void logDetailedException(Exception e, String messageKey, String message, HttpStatus status) {

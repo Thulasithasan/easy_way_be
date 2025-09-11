@@ -12,8 +12,8 @@ import com.thulasi.easyway.model.SubCategory;
 @Repository
 public interface SubCategoryRepository extends JpaRepository<SubCategory, Long> {
 
-    @Query("SELECT c FROM SubCategory c " +
-            "WHERE (:subCategoryName IS NULL OR LOWER(c.name) = LOWER(:subCategoryName))")
-    Page<SubCategory> filterSubCategories(@Param("subCategoryName") String subCategoryName, Pageable pageable);
+	@Query("SELECT c FROM SubCategory c "
+			+ "WHERE (:subCategoryName IS NULL OR LOWER(c.name) = LOWER(:subCategoryName))")
+	Page<SubCategory> filterSubCategories(@Param("subCategoryName") String subCategoryName, Pageable pageable);
 
 }

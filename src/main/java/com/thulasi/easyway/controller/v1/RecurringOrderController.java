@@ -18,33 +18,37 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class RecurringOrderController {
 
-    private final RecurringOrderItemService recurringOrderItemService;
+	private final RecurringOrderItemService recurringOrderItemService;
 
-    @Operation(summary = "Create recurring order", description = "Create a new recurring order")
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> createRecurringOrder(@Valid @RequestBody RecurringOrderRequestDto dto) {
-        ResponseEntityDto response = recurringOrderItemService.createRecurringOrder(dto);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Create recurring order", description = "Create a new recurring order")
+	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> createRecurringOrder(@Valid @RequestBody RecurringOrderRequestDto dto) {
+		ResponseEntityDto response = recurringOrderItemService.createRecurringOrder(dto);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Add item to recurring order", description = "Add item to recurring order")
-    @PostMapping(value = "/{recurringOrderId}/add-item/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> addToRecurringOrderItem(@PathVariable Long recurringOrderId, @PathVariable Long productId) {
-        ResponseEntityDto response = recurringOrderItemService.addToRecurringOrderItem(recurringOrderId, productId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Add item to recurring order", description = "Add item to recurring order")
+	@PostMapping(value = "/{recurringOrderId}/add-item/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> addToRecurringOrderItem(@PathVariable Long recurringOrderId,
+			@PathVariable Long productId) {
+		ResponseEntityDto response = recurringOrderItemService.addToRecurringOrderItem(recurringOrderId, productId);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Remove item from recurring order", description = "Remove item from recurring order")
-    @DeleteMapping(value = "/{recurringOrderId}/remove-item/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> removeFromRecurringOrderItem(@PathVariable Long recurringOrderId, @PathVariable Long productId) {
-        ResponseEntityDto response = recurringOrderItemService.removeFromRecurringOrderItem(recurringOrderId, productId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Remove item from recurring order", description = "Remove item from recurring order")
+	@DeleteMapping(value = "/{recurringOrderId}/remove-item/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> removeFromRecurringOrderItem(@PathVariable Long recurringOrderId,
+			@PathVariable Long productId) {
+		ResponseEntityDto response = recurringOrderItemService.removeFromRecurringOrderItem(recurringOrderId,
+				productId);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Get my recurring orders", description = "Get my recurring orders")
-    @GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> getMyRecurringOrder() {
-        ResponseEntityDto response = recurringOrderItemService.getMyRecurringOrder();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Get my recurring orders", description = "Get my recurring orders")
+	@GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> getMyRecurringOrder() {
+		ResponseEntityDto response = recurringOrderItemService.getMyRecurringOrder();
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }

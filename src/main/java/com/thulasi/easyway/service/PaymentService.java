@@ -5,5 +5,6 @@ import com.thulasi.easyway.payload.response.ResponseEntityDto;
 
 public interface PaymentService {
 
-    ResponseEntityDto createPayment(PaymentRequestDto dto);
+	ResponseEntityDto createPayment(PaymentRequestDto dto);
+
 }

@@ -12,21 +12,22 @@ import java.util.Map;
 @Builder
 public class HomeProductsResponseDto {
 
-    private Long productId;
+	private Long productId;
 
-    private List<ProductNameResponseDto> nameTranslations;
+	private List<ProductNameResponseDto> nameTranslations;
 
-    private String description;
+	private String description;
 
-    private BigDecimal measurementValue;
+	private BigDecimal measurementValue;
 
-    private MeasurementUnit measurementUnit;
+	private MeasurementUnit measurementUnit;
 
-    private BigDecimal measurementSellingPrice;
+	private BigDecimal measurementSellingPrice;
 
-    private String heroImageSignedUrl;
+	private String heroImageSignedUrl;
 
-    private List<String> images;
+	private List<String> images;
 
-    private Boolean isFavourite;
+	private Boolean isFavourite;
+
 }

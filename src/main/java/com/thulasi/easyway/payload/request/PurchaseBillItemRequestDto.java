@@ -6,7 +6,11 @@ import java.math.BigDecimal;
 
 @Data
 public class PurchaseBillItemRequestDto {
-    private Long productId;
-    private BigDecimal quantity;
-    private BigDecimal unitBuyingPrice;
+
+	private Long productId;
+
+	private BigDecimal quantity;
+
+	private BigDecimal unitBuyingPrice;
+
 }

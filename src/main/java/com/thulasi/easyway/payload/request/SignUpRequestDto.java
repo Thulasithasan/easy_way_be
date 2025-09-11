@@ -24,7 +24,7 @@ public class SignUpRequestDto {
 
 	@Schema(description = "User's phone number", example = "9876543210")
 	@NotBlank(message = "Phone number is required")
-	private String phoneNumber;	
+	private String phoneNumber;
 
 	@Schema(description = "User's address", example = "123 Main St, Anytown, USA")
 	@NotBlank(message = "Address is required")

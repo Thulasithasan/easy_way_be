@@ -8,6 +8,9 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class BuyingPriceDetail {
-    private BigDecimal quantity;
-    private BigDecimal unitBuyingPrice;
+
+	private BigDecimal quantity;
+
+	private BigDecimal unitBuyingPrice;
+
 }

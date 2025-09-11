@@ -77,4 +77,5 @@ public class SalesOrder extends Auditable<String> {
 			this.orderRefNo = IdGenerator.generateId("ORD");
 		}
 	}
+
 }

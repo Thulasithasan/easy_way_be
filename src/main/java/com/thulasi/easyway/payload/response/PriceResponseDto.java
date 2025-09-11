@@ -11,13 +11,23 @@ import java.math.BigDecimal;
 @Data
 @Builder
 public class PriceResponseDto {
-    private Long priceId;
-    private BigDecimal quantity;
-    private MeasurementUnit unit;
-    private BigDecimal actualPrice;
-    private BigDecimal discountPercent;
-    private BigDecimal discountAmount;
-    private BigDecimal finalPrice;
-    private Boolean isActive;
-    private Boolean isDefault;
+
+	private Long priceId;
+
+	private BigDecimal quantity;
+
+	private MeasurementUnit unit;
+
+	private BigDecimal actualPrice;
+
+	private BigDecimal discountPercent;
+
+	private BigDecimal discountAmount;
+
+	private BigDecimal finalPrice;
+
+	private Boolean isActive;
+
+	private Boolean isDefault;
+
 }

@@ -20,4 +20,5 @@ public class CategoryFilterRequestDto {
 
 	@Schema(description = "The page size", example = "10")
 	private Integer pageSize;
+
 }

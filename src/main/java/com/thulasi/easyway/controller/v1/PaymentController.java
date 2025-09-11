@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentService paymentService;
+	private final PaymentService paymentService;
 
-    @Operation(summary = "Create payment", description = "Create a new payment")
-    @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> createPayment(@Valid @RequestBody PaymentRequestDto dto) {
-        return new ResponseEntity<>(new ResponseEntityDto("Not implemented", false), HttpStatus.NOT_IMPLEMENTED);
-    }
+	@Operation(summary = "Create payment", description = "Create a new payment")
+	@PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> createPayment(@Valid @RequestBody PaymentRequestDto dto) {
+		return new ResponseEntity<>(new ResponseEntityDto("Not implemented", false), HttpStatus.NOT_IMPLEMENTED);
+	}
+
 }

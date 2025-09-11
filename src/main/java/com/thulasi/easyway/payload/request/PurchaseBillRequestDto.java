@@ -12,22 +12,24 @@ import java.util.List;
 
 @Data
 public class PurchaseBillRequestDto {
-    @Schema(description = "Supplier's name", example = "ABC Traders")
-    @NotBlank(message = "Supplier name must not be blank")
-    private String supplierName;
 
-    @Schema(description = "Bill number", example = "BILL-202306")
-    @NotBlank(message = "Bill number must not be blank")
-    private String billNumber;
+	@Schema(description = "Supplier's name", example = "ABC Traders")
+	@NotBlank(message = "Supplier name must not be blank")
+	private String supplierName;
 
-    @Schema(description = "Bill date", example = "2024-06-25")
-    @NotNull(message = "Bill date must not be null")
-    private LocalDate billDate;
+	@Schema(description = "Bill number", example = "BILL-202306")
+	@NotBlank(message = "Bill number must not be blank")
+	private String billNumber;
 
-    @Schema(description = "Total bill amount", example = "12500.50")
-    @NotNull(message = "Total amount must not be null")
-    private BigDecimal totalAmount;
+	@Schema(description = "Bill date", example = "2024-06-25")
+	@NotNull(message = "Bill date must not be null")
+	private LocalDate billDate;
 
-    @Schema(description = "Additional notes", example = "Paid in full by cash")
-    private String note;
+	@Schema(description = "Total bill amount", example = "12500.50")
+	@NotNull(message = "Total amount must not be null")
+	private BigDecimal totalAmount;
+
+	@Schema(description = "Additional notes", example = "Paid in full by cash")
+	private String note;
+
 }

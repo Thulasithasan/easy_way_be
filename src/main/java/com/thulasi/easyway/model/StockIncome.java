@@ -43,4 +43,5 @@ public class StockIncome extends Auditable<String> {
 
 	@Column(name = "total_buying_amount", nullable = false)
 	private BigDecimal totalBuyingAmount;
+
 }

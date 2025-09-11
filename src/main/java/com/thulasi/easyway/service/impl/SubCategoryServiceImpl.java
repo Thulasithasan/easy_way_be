@@ -27,57 +27,59 @@ import static com.thulasi.easyway.util.PageableUtil.buildPageable;
 @RequiredArgsConstructor
 public class SubCategoryServiceImpl implements SubCategoryService {
 
-    private final SubCategoryRepository subCategoryRepository;
-    private final PageTransformer pageTransformer;
+	private final SubCategoryRepository subCategoryRepository;
 
-    @Override
-    public ResponseEntityDto createSubCategory(SubCategoryRequestDto subCategoryRequestDto) {
-        log.info("createSubCategory: execution started");
-        SubCategory subCategory = SubCategory.builder()
-                .name(subCategoryRequestDto.getName())
-                .description(subCategoryRequestDto.getDescription())
-                .category(Category.builder().id(subCategoryRequestDto.getCategoryId()).build())
-                .build();
-        log.info("createSubCategory: execution completed");
-        subCategoryRepository.save(subCategory);
-        return new ResponseEntityDto("SubCategory created successfully", true);
-    }
+	private final PageTransformer pageTransformer;
 
-    @Override
-    public ResponseEntityDto getAllSubCategories() {
-        log.info("getAllCategories: execution started");
-        List<SubCategory> subCategories = subCategoryRepository.findAll();
-        log.info("getAllSubCategories: execution completed");
-        return new ResponseEntityDto(true, subCategories);
-    }
+	@Override
+	public ResponseEntityDto createSubCategory(SubCategoryRequestDto subCategoryRequestDto) {
+		log.info("createSubCategory: execution started");
+		SubCategory subCategory = SubCategory.builder()
+			.name(subCategoryRequestDto.getName())
+			.description(subCategoryRequestDto.getDescription())
+			.category(Category.builder().id(subCategoryRequestDto.getCategoryId()).build())
+			.build();
+		log.info("createSubCategory: execution completed");
+		subCategoryRepository.save(subCategory);
+		return new ResponseEntityDto("SubCategory created successfully", true);
+	}
 
-    @Override
-    public ResponseEntityDto getSubCategoryById(Long id) {
-        log.info("getSubCategoryById: execution started");
-        SubCategory subCategory = subCategoryRepository.findById(id)
-                .orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_SUBCATEGORY_NOT_FOUND));
-        log.info("getSubCategoryById: execution completed");
-        return new ResponseEntityDto(true, subCategory);
-    }
+	@Override
+	public ResponseEntityDto getAllSubCategories() {
+		log.info("getAllCategories: execution started");
+		List<SubCategory> subCategories = subCategoryRepository.findAll();
+		log.info("getAllSubCategories: execution completed");
+		return new ResponseEntityDto(true, subCategories);
+	}
 
-    @Override
-    public ResponseEntityDto filterSubCategories(SubCategoryFilterRequestDto dto) {
-        log.info("filterSubCategories: execution started");
-        Page<SubCategory> subCategories = subCategoryRepository.filterSubCategories(dto.getSubCategoryName(),
-                buildPageable(dto.getPageNumber(), dto.getPageSize()));
+	@Override
+	public ResponseEntityDto getSubCategoryById(Long id) {
+		log.info("getSubCategoryById: execution started");
+		SubCategory subCategory = subCategoryRepository.findById(id)
+			.orElseThrow(() -> new ModuleException(CommonMessageConstant.COMMON_ERROR_SUBCATEGORY_NOT_FOUND));
+		log.info("getSubCategoryById: execution completed");
+		return new ResponseEntityDto(true, subCategory);
+	}
 
-        PageDto pageDto = pageTransformer.transform(subCategories);
+	@Override
+	public ResponseEntityDto filterSubCategories(SubCategoryFilterRequestDto dto) {
+		log.info("filterSubCategories: execution started");
+		Page<SubCategory> subCategories = subCategoryRepository.filterSubCategories(dto.getSubCategoryName(),
+				buildPageable(dto.getPageNumber(), dto.getPageSize()));
 
-        pageDto.setItems(subCategories.getContent()
-                .stream()
-                .map(subCategory -> SubCategoryResponseDto.builder()
-                        .subCategoryId(subCategory.getId())
-                        .name(subCategory.getName())
-                        .description(subCategory.getDescription())
-                        .build())
-                .toList());
+		PageDto pageDto = pageTransformer.transform(subCategories);
 
-        log.info("filterSubCategories: execution ended");
-        return new ResponseEntityDto(true, pageDto);
-    }
+		pageDto.setItems(subCategories.getContent()
+			.stream()
+			.map(subCategory -> SubCategoryResponseDto.builder()
+				.subCategoryId(subCategory.getId())
+				.name(subCategory.getName())
+				.description(subCategory.getDescription())
+				.build())
+			.toList());
+
+		log.info("filterSubCategories: execution ended");
+		return new ResponseEntityDto(true, pageDto);
+	}
+
 }

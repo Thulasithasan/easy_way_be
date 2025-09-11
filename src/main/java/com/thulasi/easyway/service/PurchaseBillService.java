@@ -5,9 +5,11 @@ import com.thulasi.easyway.payload.response.ResponseEntityDto;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface PurchaseBillService {
-    ResponseEntityDto createPurchaseBill(PurchaseBillRequestDto dto);
 
-    ResponseEntityDto uploadPurchaseBillImage(Long purchaseBillId, MultipartFile file);
+	ResponseEntityDto createPurchaseBill(PurchaseBillRequestDto dto);
 
-    ResponseEntityDto deletePurchaseBillImage(Long purchaseBillId, String key);
+	ResponseEntityDto uploadPurchaseBillImage(Long purchaseBillId, MultipartFile file);
+
+	ResponseEntityDto deletePurchaseBillImage(Long purchaseBillId, String key);
+
 }

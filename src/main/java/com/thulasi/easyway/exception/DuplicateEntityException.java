@@ -12,34 +12,36 @@ import java.util.concurrent.atomic.AtomicReference;
 @Getter
 public class DuplicateEntityException extends RuntimeException {
 
-    private final transient MessageConstant messageKey;
+	private final transient MessageConstant messageKey;
 
-    private static final AtomicReference<MessageUtil> messageUtil = new AtomicReference<>();
+	private static final AtomicReference<MessageUtil> messageUtil = new AtomicReference<>();
 
-    @Component
-    public static class MessageUtilInjector implements ApplicationContextAware {
+	@Component
+	public static class MessageUtilInjector implements ApplicationContextAware {
 
-        @Override
-        public void setApplicationContext(ApplicationContext applicationContext) {
-            messageUtil.set(applicationContext.getBean(MessageUtil.class));
-        }
-    }
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) {
+			messageUtil.set(applicationContext.getBean(MessageUtil.class));
+		}
 
-    public DuplicateEntityException(MessageConstant messageKey) {
-        super(getMessageUtil().getMessage(messageKey.getMessageKey()));
-        this.messageKey = messageKey;
-    }
+	}
 
-    public DuplicateEntityException(MessageConstant messageKey, Object[] args) {
-        super(getMessageUtil().getMessage(messageKey.getMessageKey(), args));
-        this.messageKey = messageKey;
-    }
+	public DuplicateEntityException(MessageConstant messageKey) {
+		super(getMessageUtil().getMessage(messageKey.getMessageKey()));
+		this.messageKey = messageKey;
+	}
 
-    private static MessageUtil getMessageUtil() {
-        MessageUtil util = messageUtil.get();
-        if (util == null) {
-            throw new IllegalStateException("MessageUtil not initialized");
-        }
-        return util;
-    }
+	public DuplicateEntityException(MessageConstant messageKey, Object[] args) {
+		super(getMessageUtil().getMessage(messageKey.getMessageKey(), args));
+		this.messageKey = messageKey;
+	}
+
+	private static MessageUtil getMessageUtil() {
+		MessageUtil util = messageUtil.get();
+		if (util == null) {
+			throw new IllegalStateException("MessageUtil not initialized");
+		}
+		return util;
+	}
+
 }

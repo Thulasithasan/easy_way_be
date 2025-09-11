@@ -22,29 +22,30 @@ import lombok.Setter;
 @Table(name = "invoices")
 public class Invoice extends Auditable<String> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false, updatable = false)
+	private Long id;
 
-    @Column(name = "invoice_ref_no", nullable = false)
-    private String invoiceRefNo = IdGenerator.generateId("INV");
+	@Column(name = "invoice_ref_no", nullable = false)
+	private String invoiceRefNo = IdGenerator.generateId("INV");
 
-    @OneToOne
-    @JoinColumn(name = "sales_order_id", nullable = false)
-    private SalesOrder salesOrder;
+	@OneToOne
+	@JoinColumn(name = "sales_order_id", nullable = false)
+	private SalesOrder salesOrder;
 
-    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Payment> payments = new ArrayList<>();
+	@OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Builder.Default
+	private List<Payment> payments = new ArrayList<>();
 
-    @Column(name = "invoice_amount", nullable = false)
-    private BigDecimal invoiceAmount;
+	@Column(name = "invoice_amount", nullable = false)
+	private BigDecimal invoiceAmount;
 
-    @PrePersist
-    public void prePersist() {
-        if (this.invoiceRefNo == null) {
-            this.invoiceRefNo = IdGenerator.generateId("INV");
-        }
-    }
+	@PrePersist
+	public void prePersist() {
+		if (this.invoiceRefNo == null) {
+			this.invoiceRefNo = IdGenerator.generateId("INV");
+		}
+	}
+
 }

@@ -5,9 +5,10 @@ import com.thulasi.easyway.payload.response.ResponseEntityDto;
 
 public interface StockService {
 
-    ResponseEntityDto getHomeProducts(StockFilterRequestDto dto);
+	ResponseEntityDto getHomeProducts(StockFilterRequestDto dto);
 
-    ResponseEntityDto getHomeProductInfo(Long productId);
+	ResponseEntityDto getHomeProductInfo(Long productId);
 
-    ResponseEntityDto filterStock(StockFilterRequestDto dto);
+	ResponseEntityDto filterStock(StockFilterRequestDto dto);
+
 }

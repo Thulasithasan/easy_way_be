@@ -16,26 +16,27 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class CardItemController {
 
-    private final CardItemService cardItemService;
+	private final CardItemService cardItemService;
 
-    @Operation(summary = "Add product to card", description = "Add product to card by productId")
-    @PostMapping(value = "/add/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> addToCard(@PathVariable Long productId) {
-        ResponseEntityDto response = cardItemService.addToCard(productId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Add product to card", description = "Add product to card by productId")
+	@PostMapping(value = "/add/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> addToCard(@PathVariable Long productId) {
+		ResponseEntityDto response = cardItemService.addToCard(productId);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Remove product from card", description = "Remove product from card by productId")
-    @DeleteMapping(value = "/remove/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> removeFromCart(@PathVariable Long productId) {
-        ResponseEntityDto response = cardItemService.removeFromCart(productId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Remove product from card", description = "Remove product from card by productId")
+	@DeleteMapping(value = "/remove/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> removeFromCart(@PathVariable Long productId) {
+		ResponseEntityDto response = cardItemService.removeFromCart(productId);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Get my card items", description = "Get all card items for current user")
-    @GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> getMyCard() {
-        ResponseEntityDto response = cardItemService.getMyCard();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Get my card items", description = "Get all card items for current user")
+	@GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> getMyCard() {
+		ResponseEntityDto response = cardItemService.getMyCard();
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }

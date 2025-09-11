@@ -19,29 +19,32 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class FileHandleController {
 
-    private final S3ImageHandler s3ImageHandler;
+	private final S3ImageHandler s3ImageHandler;
 
-    @Operation(summary = "Upload image to S3", description = "Upload an image to S3 bucket")
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> uploadImage(@RequestParam("key") String key, @RequestParam("file") MultipartFile file) {
-        Map<String, String> result = s3ImageHandler.uploadImage(key, file);
-        ResponseEntityDto response = new ResponseEntityDto(true, result);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Upload image to S3", description = "Upload an image to S3 bucket")
+	@PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> uploadImage(@RequestParam("key") String key,
+			@RequestParam("file") MultipartFile file) {
+		Map<String, String> result = s3ImageHandler.uploadImage(key, file);
+		ResponseEntityDto response = new ResponseEntityDto(true, result);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Get image URL", description = "Get the URL for an image in S3 bucket")
-    @GetMapping(value = "/url", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> getImageUrl(@RequestParam("key") String key) {
-        String url = s3ImageHandler.getImageUrl(key);
-        ResponseEntityDto response = new ResponseEntityDto(true, url);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Get image URL", description = "Get the URL for an image in S3 bucket")
+	@GetMapping(value = "/url", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> getImageUrl(@RequestParam("key") String key) {
+		String url = s3ImageHandler.getImageUrl(key);
+		ResponseEntityDto response = new ResponseEntityDto(true, url);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
 
-    @Operation(summary = "Delete image from S3", description = "Delete an image from S3 bucket")
-    @DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> deleteImage(@RequestParam("key") String key) {
-        s3ImageHandler.deleteImage(key);
-        ResponseEntityDto response = new ResponseEntityDto("Image deleted successfully", true);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+	@Operation(summary = "Delete image from S3", description = "Delete an image from S3 bucket")
+	@DeleteMapping(value = "/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ResponseEntityDto> deleteImage(@RequestParam("key") String key) {
+		s3ImageHandler.deleteImage(key);
+		ResponseEntityDto response = new ResponseEntityDto("Image deleted successfully", true);
+		return new ResponseEntity<>(response, HttpStatus.OK);
+	}
+
 }

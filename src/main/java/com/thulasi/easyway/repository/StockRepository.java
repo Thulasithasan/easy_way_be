@@ -14,24 +14,14 @@ import java.util.Optional;
 @Repository
 public interface StockRepository extends JpaRepository<Stock, Long> {
 
-    Optional<Stock> findByProductId(Long productId);
+	Optional<Stock> findByProductId(Long productId);
 
-    @Query(value = "SELECT DISTINCT s.* FROM stocks s " +
-            "JOIN products p ON s.product_id = p.id " +
-            "JOIN product_names pn ON p.id = pn.product_id " +
-            "JOIN sub_categories sc ON p.sub_category_id = sc.id " +
-            "JOIN categories c ON sc.category_id = c.id " +
-            "WHERE (:categoryId IS NULL OR c.id = :categoryId) " +
-            "AND (:subCategoryId IS NULL OR sc.id = :subCategoryId) " +
-            "AND (:productName IS NULL OR LOWER(pn.name) LIKE LOWER(CAST(:productName AS text)))",
-            nativeQuery = true)
-    Page<Stock> filterStocks(
-            @Param("categoryId") Long categoryId,
-            @Param("subCategoryId") Long subCategoryId,
-            @Param("productName") String productName,
-            Pageable pageable
-    );
-
-
+	@Query(value = "SELECT DISTINCT s.* FROM stocks s " + "JOIN products p ON s.product_id = p.id "
+			+ "JOIN product_names pn ON p.id = pn.product_id " + "JOIN sub_categories sc ON p.sub_category_id = sc.id "
+			+ "JOIN categories c ON sc.category_id = c.id " + "WHERE (:categoryId IS NULL OR c.id = :categoryId) "
+			+ "AND (:subCategoryId IS NULL OR sc.id = :subCategoryId) "
+			+ "AND (:productName IS NULL OR LOWER(pn.name) LIKE LOWER(CAST(:productName AS text)))", nativeQuery = true)
+	Page<Stock> filterStocks(@Param("categoryId") Long categoryId, @Param("subCategoryId") Long subCategoryId,
+			@Param("productName") String productName, Pageable pageable);
 
 }
