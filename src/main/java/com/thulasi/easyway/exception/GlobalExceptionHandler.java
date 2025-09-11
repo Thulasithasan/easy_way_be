@@ -232,6 +232,16 @@ public class GlobalExceptionHandler {
 		return new ResponseEntity<>(new ResponseEntityDto(true, errorResponse), status);
 	}
 
+	@ExceptionHandler(DuplicateEntityException.class)
+	public ResponseEntity<ResponseEntityDto> handleDuplicateEntityException(DuplicateEntityException e) {
+		HttpStatus status = HttpStatus.CONFLICT;
+		logDetailedException(e, e.getMessageKey().name(), e.getMessage(), status);
+
+		return new ResponseEntity<>(
+				new ResponseEntityDto(true,
+						new ErrorResponse(status, e.getMessage(), e.getMessageKey())),
+				status);
+	}
 
 	private void logDetailedException(Exception e, String messageKey, String message, HttpStatus status) {
 		String apiPath = request.getRequestURI();

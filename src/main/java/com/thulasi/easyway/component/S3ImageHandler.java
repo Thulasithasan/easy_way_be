@@ -43,7 +43,8 @@ public class S3ImageHandler {
 
 			PutObjectRequest request = new PutObjectRequest(bucketName, key, file.getInputStream(), metadata);
 			s3Client.putObject(request);
-		} catch (IOException e) {
+		}
+		catch (IOException e) {
 			throw new IllegalArgumentException("Failed to upload image", e);
 		}
 
@@ -53,9 +54,9 @@ public class S3ImageHandler {
 		return response;
 	}
 
-//	public String getImageUrl(String key) {
-//		return s3Client.getUrl(bucketName, key).toString();
-//	}
+	// public String getImageUrl(String key) {
+	// return s3Client.getUrl(bucketName, key).toString();
+	// }
 
 	public String getImageUrl(String key) {
 		// Set expiration time
@@ -65,10 +66,9 @@ public class S3ImageHandler {
 		expiration.setTime(expTimeMillis);
 
 		// Generate pre-signed URL
-		GeneratePresignedUrlRequest generatePresignedUrlRequest =
-				new GeneratePresignedUrlRequest(bucketName, key)
-						.withMethod(HttpMethod.GET)
-						.withExpiration(expiration);
+		GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, key)
+				.withMethod(HttpMethod.GET)
+				.withExpiration(expiration);
 
 		return s3Client.generatePresignedUrl(generatePresignedUrlRequest).toString();
 	}

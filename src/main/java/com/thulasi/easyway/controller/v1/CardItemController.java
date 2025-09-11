@@ -38,4 +38,5 @@ public class CardItemController {
         ResponseEntityDto response = cardItemService.getMyCard();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 }
