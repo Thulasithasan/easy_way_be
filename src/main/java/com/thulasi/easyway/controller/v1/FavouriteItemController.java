@@ -18,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class FavouriteItemController {
 
     private final FavouriteItemRepository favouriteItemRepository;
+
     private final FavouriteItemService favouriteItemService;
 
-    @Operation(summary = "Get all favourite items for current user", description = "Get all favourite items for current user")
+    @Operation(summary = "Get all favourite items for current user",
+            description = "Get all favourite items for current user")
     @GetMapping(value = "/my", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseEntityDto> getMyFavourites() {
         ResponseEntityDto response = favouriteItemService.getMyFavouteItems();
@@ -40,4 +42,5 @@ public class FavouriteItemController {
         ResponseEntityDto response = favouriteItemService.removeFavourite(productId);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 }

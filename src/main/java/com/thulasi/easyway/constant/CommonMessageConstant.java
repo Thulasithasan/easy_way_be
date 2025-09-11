@@ -23,6 +23,7 @@ public enum CommonMessageConstant implements MessageConstant {
 	COMMON_ERROR_COMPETITION_REGISTRATION_NOT_FOUND("api.error.common.competition-registration-not-found"),
 
 	COMMON_ERROR_CATEGORY_NOT_FOUND("api.error.common.category-not-found"),
+	COMMON_ERROR_CATEGORY_ALREADY_EXISTS("api.error.common.category-already-exists"),
 	COMMON_ERROR_SUBCATEGORY_NOT_FOUND("api.error.common.subcategory-not-found"),
 	COMMON_ERROR_PRODUCT_NOT_FOUND("api.error.common.product-not-found"),
 	COMMON_ERROR_SALES_ORDER_NOT_FOUND("api.error.common.sales-order-not-found"),

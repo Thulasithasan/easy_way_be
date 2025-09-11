@@ -22,8 +22,10 @@ public class FileHandleController {
     private final S3ImageHandler s3ImageHandler;
 
     @Operation(summary = "Upload image to S3", description = "Upload an image to S3 bucket")
-    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseEntityDto> uploadImage(@RequestParam("key") String key, @RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseEntityDto> uploadImage(@RequestParam("key") String key,
+                                                         @RequestParam("file") MultipartFile file) {
         Map<String, String> result = s3ImageHandler.uploadImage(key, file);
         ResponseEntityDto response = new ResponseEntityDto(true, result);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -44,4 +46,5 @@ public class FileHandleController {
         ResponseEntityDto response = new ResponseEntityDto("Image deleted successfully", true);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 }

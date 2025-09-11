@@ -14,4 +14,7 @@ public interface CategoryService {
 
 	ResponseEntityDto filterCategories(CategoryFilterRequestDto categoryFilterRequestDto);
 
+	ResponseEntityDto updateCategory(Long id, CategoryRequestDto categoryRequestDto);
+
+	ResponseEntityDto changeCategoryStatus(Long id);
 }
